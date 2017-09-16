@@ -13,28 +13,47 @@ use Think\Model;
 
 class TaskModel extends Model
 {
-    public function getNextTask(){
-        $ff = $this->where([])->order('time')->limit(1)->getField('0,id,content');
-        return $ff[0];
+    public function getNextTask($tid){
+
+        $level=M('TaskLevel')->where("taskid=$tid and staus=0")->order('id')->find();
+
+        if(empty($level)){
+            if(IS_AJAX){
+                exit(json_encode(array('staus'=>0,'message'=>"no task")));
+            }else{
+                return false;
+            }
+        }
+        $w['level']=$level['level'];
+        $w['staus']=0;
+        $option = M("TaskOption")->where($w)->limit(1)->find();
+        $ret['id']=$option['id'];
+        $ret['taskid'] = $tid;
+        $ret['url'] = $option['url'];
+        $ret['scripts'] = $level['scripts'];
+        return $ret;
     }
 
-    public function backTask($id,$list){
-        $id=$id?$id:1;
-        $d['stepone'] = json_encode($list);
-        $d['steponestatus']=1;
-        $d['updateone'] = time();
-        $this->where('id='.$id)->save($d);
+    public function backTask($optionid,$list){
+        $d['content'] = json_encode($list);
+        $d['updatetime'] = time();
+        $this->where('id='.$optionid)->save($d);
     }
 
     public function addTask($name){
-        return $this->add('name='.$name);
+        $d['name']=$name;
+        return $this->add($d);
     }
 
-    public function addOptions(){
-
+    public function addOptions($opt){
+        M('TaskOption')->addAll($opt);
     }
 
-    public function addLevels(){
+    public function addLevels($opl){
+        M('TaskLevel')->addAll($opl);
+    }
 
+    public function getAllTask(){
+        return $this->find();
     }
 }

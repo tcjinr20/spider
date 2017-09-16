@@ -1,0 +1,14 @@
+ALTER TABLE `sp_task`
+ADD COLUMN `staus`  tinyint(3) NULL FIRST ;
+
+ALTER TABLE `sp_task_level`
+ADD COLUMN `staus`  tinyint(3) NULL DEFAULT 0 AFTER `attrs`;
+
+ALTER TABLE `sp_task_option`
+ADD COLUMN `staus`  tinyint(3) NULL DEFAULT 0 AFTER `url`;
+
+ALTER TABLE `sp_task_level`
+ADD COLUMN `level`  int NULL AFTER `staus`;
+
+ALTER TABLE `sp_task_option`
+ADD COLUMN `updatetime`  timestamp NULL ON UPDATE CURRENT_TIMESTAMP AFTER `staus`;
