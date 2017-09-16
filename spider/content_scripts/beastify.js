@@ -1,0 +1,55 @@
+function setCookie(c_name,value,expiredays)
+{
+  var exdate=new Date()
+  exdate.setDate(exdate.getDate()+expiredays)
+    document.cookie=c_name+ "=" +escape(value)+
+      ((expiredays==null) ? "" : ";expires="+exdate.toGMTString())
+}
+
+function getCookie(c_name)
+{
+  if (document.cookie.length>0)
+  {
+    c_start=document.cookie.indexOf(c_name + "=")
+    if (c_start!=-1)
+    {
+      c_start=c_start + c_name.length+1
+      c_end=document.cookie.indexOf(";",c_start)
+      if (c_end==-1) c_end=document.cookie.length
+      return unescape(document.cookie.substring(c_start,c_end))
+    }
+  }
+  return ""
+}
+
+function beastify(request, sender, sendResponse) {
+  if(getCookie("begin")==1){
+    insertBeast();
+  }
+  browser.runtime.onMessage.removeListener(beastify);
+}
+
+function insertBeast() {
+  var b = getP();
+  var sending = browser.runtime.sendMessage({
+    sendto: b
+  });
+  sending.then(function(message){
+    console.log('from bg');
+    location.href=message.response;
+  }, function(error){
+    console.log("error"+error.message);
+  });
+}
+
+function getP(){
+
+  var backd = [];
+  var alldiv = document.querySelectorAll('.w528 .list_link');
+  alldiv.forEach(function(e,i){
+    backd.push((e.querySelectorAll('li p a')[0]).href);
+  })
+  return backd;
+}
+beastify();
+browser.runtime.onMessage.addListener(beastify);

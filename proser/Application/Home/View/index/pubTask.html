@@ -1,0 +1,39 @@
+<extend name="base/layout" />
+
+<block name="body">
+    <form>
+        <div class="panel">
+            <div class="panel-title">创建任务</div>
+            <div class="panel-body">
+                <div class="input-group">
+                    <span class="input-group-addon">任务标识</span>
+                    <input type="text"  class="form-control" placeholder="taskName" name="taskname">
+                </div>
+
+                <div class="input-group">
+                    <span class="input-group-addon" >URL(*)</span>
+                    <input type="text" class="form-control" placeholder="urls" name="urls">
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon" >最大值</span>
+                    <input type="text" class="form-control" placeholder="maxpage" name="maxpage">
+                </div>
+                <div class="input-group">
+                    <span class="input-group-addon" >最小值</span>
+                    <input type="text" class="form-control" placeholder="minpage" name="minpage" >
+                </div>
+                <div class="input-group">
+                    <button type="button" class="btn btn-primary" onclick="onpreview()">生成预览</button>
+                    <button type="button" class="btn btn-primary" onclick="addNexttask()">添加脚本</button>
+                </div>
+                <div class="well" id="pref"></div>
+            </div>
+        </div>
+        <div class="panel" id="tasklevel">
+
+        </div>
+        <div class="panel">
+            <input type="submit" class="btn btn-primary" onclick="onpreview()">生成预览</input>
+        </div>
+    </form>
+</block>
