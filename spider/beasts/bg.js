@@ -27,7 +27,7 @@ function sendByPack(){
 
 browser.runtime.onMessage.addListener(handleMessage);
 
-const serhost = 'http://spider.com/index.php/home/index/ajax_form?XDEBUG_SESSION_START=10271';
+const serhost = 'http://spider.com/index.php/home/index/ajax_form';
 function sendToSer(param){
     var fd = buildParam(param);
     const requestURL = serhost;
@@ -88,9 +88,15 @@ function getURL(obj,cookie){
     });
 }
 
+
+
 function benginfrompanel(v){
     v=v?v:1;
     getURL({'init':'0'},v);
+}
+
+function getSer(){
+    return 'http://spider.com/index.php/home/';
 }
 
 function getActiveTab() {
