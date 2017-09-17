@@ -4,15 +4,31 @@ use Think\Controller;
 
 class IndexController extends Controller {
     public function index(){
+        $this->tasks=D('Task')->getAllTask();
+        $this->display();
+    }
 
+    public function delform(){
+        $task=I('id',0);
+        if(empty($task)){
+            exit("<script>alert('参数错误');history.back()</script>");
+        }
+        D('Task')->deltask($task);
+        redirect(U("/"));
+    }
+
+    public function exditform(){
+        $task=I('id',0);
+        list($a,$b,$c)= D('Task')->getTaskByid($task);
+        $this->task=$a;
+        $this->level=$b;
+        $this->option=$c;
+        $this->display();
     }
 
     public function ajax_form(){
-        // 指定允许其他域名访问
         header('Access-Control-Allow-Origin:*');
-// 响应类型
         header('Access-Control-Allow-Methods:POST');
-// 响应头设置
         header('Access-Control-Allow-Headers:x-requested-with,content-type');
         $param = I("param",[]);
         $optionid =$param['optionid'];
@@ -30,7 +46,7 @@ class IndexController extends Controller {
         $param = I('param',[]);
         $taskid = $param['taskid'];
         if(empty($taskid)){
-            exit('wrong');
+            exit(json_encode(array('staus'=>0,"message"=>'wrong')));
         }
         $task = D("Task")->getNextTask($taskid);
         $task['staus']=1;
@@ -69,7 +85,7 @@ class IndexController extends Controller {
                 foreach($tasklev as $k=>$t){
                     if(!empty($t['scripts'])){
                         $int['attrs'] = $t['attr']?$t['attr']:'';
-                        $int['scripts'] =$t['scripts'];
+                        $int['scripts'] =htmlspecialchars(htmlentities($t['scripts']));
                         $int['taskid']=$taskid;
                         $int['level']=$t['level'];
                         $ls[]=$int;
@@ -79,6 +95,38 @@ class IndexController extends Controller {
             }
             redirect(U('index/pubTask'));
         }
+        $this->display();
+    }
+
+    public function putToCvs(){
+        $task = I("id",0);
+        if(empty($task)){
+            exit("参数错误");
+        }
+
+        $text = '';
+        $key = null;
+        $path = C('CVSPATH');
+
+        while($atask = D("Task")->getAllOpt($task,100)){
+            foreach($atask as $k=>$v){
+                $ar = json_decode($v['content']);
+                foreach($ar as $bv){
+                    if($key==null){
+                        $key=array_keys($bv);
+                        $text .=" ,".implode(',',$key)."\n";
+                    }
+                    $text .="$k,".implode(',',array_values($bv))+"\n";
+                }
+                file_put_contents($path,$text.PHP_EOL, FILE_APPEND);
+            }
+        }
+        echo "<a href='$path'>下载</a>";
+    }
+
+    public function test(){
+        $id = I("id",0);
+        $this->id=$id;
         $this->display();
     }
 }

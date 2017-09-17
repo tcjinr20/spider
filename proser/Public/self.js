@@ -5,15 +5,16 @@
 var level = 0;
 function addNexttask(){
 level++;
-var item ='<div class="panel-title">#1级任务</div>\
+    var item ='<div class="panel panel-default">\
+    <input type="hidden" value="#1" name="task[#1][level]">\
+    <div class="panel-heading">#1级执行脚本</div>\
     <div class="panel-body">\
-        <span>执行脚本</span>\
-        <textarea name="task[#1][scripts]"></textarea>\
-        </div>\
-        <input type="hidden" value="#1" name="task[#1][level]">\
-        <span>将该字段数据生成#1级任务(执行脚本返回的数据好友该字段，否者视为整个数据)</span>\
-    <input type="text" class="form-control" name="task[#1][attr]">';
-
+    <label class="col-sm-2">脚本</label>\
+    <div class="col-sm-10"><textarea name="task[#1][scripts]" class="form-control" rows="3"></textarea></div>\
+    <label class="col-sm-2">属性</label>\
+    <div class="col-sm-10"><input type="text" class="form-control" name="task[#1][attr]"></div>\
+    </div>\
+    </div>';
     var lk=  item.replace(/#1/g,level);
 $("#tasklevel").append(lk);
 }

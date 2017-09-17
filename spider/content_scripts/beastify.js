@@ -22,6 +22,8 @@ function getCookie(c_name)
   return ""
 }
 
+
+
 function beastify(request, sender, sendResponse) {
   if(getCookie("begin")==1){
     insertBeast();
@@ -30,26 +32,45 @@ function beastify(request, sender, sendResponse) {
 }
 
 function insertBeast() {
-  var b = getP();
+  browser.storage.local.get().then(onUpdate, onError);
+
+}
+
+function onUpdate(setting){
+  var sp = setting['scripts'];
+  if(sp){
+    eval(sp);
+  }
+  try{
+    var b = getSpiderData();
+  }catch(e){
+    var b = [];
+  }
+  console.log(b);
   var sending = browser.runtime.sendMessage({
     sendto: b
   });
   sending.then(function(message){
-    console.log('from bg');
+    console.log('from bg',message);
     location.href=message.response;
   }, function(error){
     console.log("error"+error.message);
   });
 }
 
-function getP(){
 
-  var backd = [];
-  var alldiv = document.querySelectorAll('.w528 .list_link');
-  alldiv.forEach(function(e,i){
-    backd.push((e.querySelectorAll('li p a')[0]).href);
-  })
-  return backd;
+function onError(){
+  console.log('storage wrong');
 }
+
 beastify();
 browser.runtime.onMessage.addListener(beastify);
+
+function getSpiderData(){
+  //var back = [];
+  //var ms = document.querySelectorAll('.cla');
+  //for(var i=0;i<ms.length;i++){
+  //    back.push(ms[i].innerHTML);
+  //}
+  return [];
+}

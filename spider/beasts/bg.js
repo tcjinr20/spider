@@ -7,9 +7,11 @@ var curtab;
 var delay = 2000;//刷新频率
 var serpack=[];//发送服务端的数据包
 var inttime = 0;
+const serhost = 'http://spider.com/index.php/home';
+
 function handleMessage(request, sender, sendResponse) {
     if(request.sendto){
-        serpack.push({list:request.sendto,init:param['nid']});
+        serpack.push({list:request.sendto,taskid:param['taskid'],optionid:param['id']});
         sendByPack();
     }
 }
@@ -17,9 +19,11 @@ function handleMessage(request, sender, sendResponse) {
 function sendByPack(){
     if(inttime!=0)return;
     inttime = setInterval(function(){
+        console.log('serpack',serpack);
         if(serpack.length>0){
-            getURL(serpack.shift());
+            getFrom("/index/ajax_form",serpack.shift());
         }else{
+            clearInterval(inttime);
             inttime=0;
         }
     },delay);
@@ -27,10 +31,10 @@ function sendByPack(){
 
 browser.runtime.onMessage.addListener(handleMessage);
 
-const serhost = 'http://spider.com/index.php/home/index/ajax_form';
-function sendToSer(param){
+
+function sendToSer(url,param){
     var fd = buildParam(param);
-    const requestURL = serhost;
+    const requestURL = serhost+url+"?XDEBUG_SESSION_START=13913";
     const requestHeaders = new Headers();
     const driveRequest = new Request(requestURL, {
         method: "POST",
@@ -66,9 +70,11 @@ function buildParam(param){
 }
 
 
-function getURL(obj,cookie){
-    sendToSer(obj).then(function(p){
+function getFrom(url,obj,cookie){
+    sendToSer(url,obj).then(function(p){
+        console.log(p)
         param=p;
+        browser.storage.local.set(param);
         if(param.staus==1 && param['url']){
              if(curtab){
                  browser.tabs.update(curtab.id,{url:param['url']});
@@ -88,15 +94,12 @@ function getURL(obj,cookie){
     });
 }
 
-
-
-function benginfrompanel(v){
-    v=v?v:1;
-    getURL({'init':'0'},v);
+function benginfrompanel(taskid,level){
+    getFrom('/index/ajax_next',{'taskid':taskid,level:level},1);
 }
 
 function getSer(){
-    return 'http://spider.com/index.php/home/';
+    return serhost;
 }
 
 function getActiveTab() {
@@ -104,12 +107,14 @@ function getActiveTab() {
 }
 
 getActiveTab().then(function(tabs){
-    browser.cookies.get({
-        url: tabs[0].url,
-        name:'begin'
-    }).then(function(cookie){
-        if(cookie && cookie.value==1){
-            getURL({'init':'0'});
-        }
-    });
+    if(tabs[0].url){
+        browser.cookies.get({
+            url: tabs[0].url,
+            name:'begin'
+        }).then(function(cookie){
+            if(cookie && cookie.value==1){
+                getURL({'init':'0'});
+            }
+        });
+    }
 })
