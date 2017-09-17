@@ -1,0 +1,17 @@
+<extend name="base/layout" />
+
+<block name="body">
+    <a class="btn btn-default" href="{:U('index/pubTask')}">添加</a>
+    <ul class="list-group">
+        <volist name="tasks" id="vo">
+            <li class="list-group-item">
+                {$vo.name}
+                <div class="btn-group" role="group" aria-label="Default button group">
+                    <a type="button" class="btn btn-default" href="{:U('index/exditform',array('id'=>$vo[id]))}">查看</a>
+                    <a type="button" class="btn btn-default" href="{:U('index/delform',array('id'=>$vo[id]))}">删除</a>
+                    <a type="button" class="btn btn-default" href="{:U('index/putToCvs',array('id'=>$vo[id]))}">到处数据(cvs)</a>
+                </div>
+            </li>
+        </volist>
+    </ul>
+</block>
