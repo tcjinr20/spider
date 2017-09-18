@@ -34,7 +34,6 @@ function beastify(request, sender, sendResponse) {
 
 function insertBeast() {
   browser.storage.local.get().then(onUpdate, onError);
-
 }
 
 function onUpdate(setting){
