@@ -116,7 +116,8 @@ class IndexController extends Controller {
         $level = array_pop($tta)['level'];
         $fp = fopen($path, 'a');
         $puthead = true;
-        $atask = D("Task")->getOutOpt($task,$level,3,$page);
+
+        while($atask = D("Task")->getOutOpt($task,$level,1000,$page)){
             $page++;
             foreach($atask as $k=>$v){
                 $ar = json_decode($v['content']);
@@ -133,9 +134,7 @@ class IndexController extends Controller {
                 }
                 fputcsv($fp,$item);
             }
-
-
-
+        }
         echo "<a href='$path'>下载</a>";
     }
 

@@ -49,7 +49,20 @@
             mm[lab[i]]=div.textContent.replace(/(^\s+)|(\s+$)/g,"");
             back.push(mm);
         }
+        back.push({"企业名称":document.querySelector(".Hugotitle a").textContent});
+        console.log(back);
         return back;
     }
+
+
+    function getHost(url){
+        var p = url.indexOf('/',7);
+        var host=url.substring(0,p);
+        var arr = host.split(".");
+        var pro = arr[0].substring(0,arr[0].indexOf('//')+2)
+        return pro+arr[arr.length-2]+"."+arr[arr.length-1];
+    }
+
+    console.log(getHost("http://zbjpts.alu.cn/spli.html"));
     getSpiderData();
 </script>
