@@ -72,8 +72,10 @@ function buildParam(param){
 
 function getFrom(url,obj,cookie){
     sendToSer(url,obj).then(function(p){
-        console.log(p)
         param=p;
+        if(param['url']){
+            param['url']=param['url'].replace('supply','contact');
+        }
         browser.storage.local.set(param);
         if(param.staus==1 && param['url']){
              if(curtab){
@@ -81,21 +83,26 @@ function getFrom(url,obj,cookie){
              }else{
                  curtab = browser.tabs.create({url:param['url']});
              }
-            if(cookie){
-                if(param['url']){
-                    browser.cookies.set({
-                        url: param['url'],
-                        name: "begin",
-                        value: "1"
-                    });
-                }
-            }
+            //if(cookie){
+            //    if(param['url']){
+            //        browser.cookies.set({
+            //            url: param['url'],
+            //            name: "begin",
+            //            value: "1"
+            //        }).then(function(){
+            //            console.log("set cookie  right");
+            //        },function(){
+            //            console.log("set cookie wrong")
+            //        });
+            //    }
+            //}
         }
     });
 }
 
-function benginfrompanel(taskid,level){
-    getFrom('/index/ajax_next',{'taskid':taskid,level:level},1);
+function benginfrompanel(taskid,lay){
+    delay=lay?lay:2000;
+    getFrom('/index/ajax_next',{'taskid':taskid},1);
 }
 
 function getSer(){
@@ -118,3 +125,5 @@ getActiveTab().then(function(tabs){
         });
     }
 })
+
+

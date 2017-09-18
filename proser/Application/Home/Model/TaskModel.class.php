@@ -14,12 +14,11 @@ use Think\Model;
 class TaskModel extends Model
 {
     public function getNextTask($tid){
-
         $level=M('TaskLevel')->where("taskid=$tid and staus=0")->order('id')->find();
-
         if(empty($level)){
             if(IS_AJAX){
-                exit(json_encode(array('staus'=>0,'message'=>"no task")));
+                echo (json_encode(array('staus'=>0,'message'=>"no task")));
+                return false;
             }else{
                 return false;
             }
@@ -30,7 +29,61 @@ class TaskModel extends Model
         $option = M("TaskOption")->where($w)->limit(1)->find();
         if(empty($option)){
             M('TaskLevel')->where("id=".$level['id'])->save(array('staus'=>1));
-            exit(json_encode(array('staus'=>0,'message'=>"no task")));
+            echo (json_encode(array('staus'=>0,'message'=>"no task")));
+            return false;
+        }
+        $ret['id']=$option['id'];
+        $ret['taskid'] = $tid;
+        $ret['url'] = $option['url'];
+        $ret['scripts'] = $level['scripts'];
+        return $ret;
+    }
+
+    private function getopt($tid,$level,$staus=0){
+        $w['level']=$level;
+        $w['taskid']=$tid;
+        $w['staus']=$staus;
+        $option = M("TaskOption")->where($w)->limit(1)->find();
+        return $option;
+    }
+
+    private function echoBack(){
+
+    }
+
+    public function getNextLevel($tid){
+        $level=M('TaskLevel')->where("taskid=$tid and staus=0")->limit(1)->find();
+        if(empty($level)){
+            return false;
+        }
+        if($level['level']>1){
+            $opt = $this->getopt($tid,$level['level']-1,1);
+            if(empty($opt)||empty($opt['content'])){
+
+            }else{
+                $con = json_decode($opt['content']);
+                $put = [];
+                foreach($con as $c){
+                    if(!empty($level['attrs'])){
+                        $w['url']=$c[$level['attrs']];
+                    }else{
+                        $w['url']=$c;
+                    }
+                    $w['level'] = $level['level'];
+                    $w['staus']=0;
+                    $w['taskid'] = $tid;
+                    $put[]=$w;
+                }
+                M("TaskOption")->addAll($put);
+            }
+        }
+
+        $option = $this->getopt($tid,$level['level'],0);
+        if(empty($option)){
+            M('TaskLevel')->where("id=".$level['id'])->save(array('staus'=>1));
+            $opp = $this->getNextLevel($tid);
+            if($opp)return$opp;
+            return false;
         }
         $ret['id']=$option['id'];
         $ret['taskid'] = $tid;
@@ -61,9 +114,9 @@ class TaskModel extends Model
 
     public function getAllTask(){
         $task = $this->field('id,name')->select();
-        foreach($task as &$v){
-            $v['level']=M('TaskLevel')->where('taskid='.$v['id'])->field('level')->select();
-        }
+//        foreach($task as &$v){
+//            $v['level']=M('TaskLevel')->where('taskid='.$v['id'])->field('level')->select();
+//        }
         return $task;
     }
 
@@ -81,8 +134,9 @@ class TaskModel extends Model
         M("TaskLevel")->where("taskid=$taskid")->delete();
         M("TaskOption")->where("taskid=$taskid")->delete();
     }
+    //
+    public function getOutOpt($task,$level,$limit=100,$page=0){
 
-    public function getAllOpt($task,$limit=100){
-        return M("TaskOption")->where("taskid=$task")->limit($limit)->select();
+        return M("TaskOption")->where("taskid=$task and staus=1 and level=$level")->limit($page*$limit,$limit)->select();
     }
 }

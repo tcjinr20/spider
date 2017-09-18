@@ -44,13 +44,17 @@ class IndexController extends Controller {
 
     public function ajax_next(){
         $param = I('param',[]);
-        $taskid = $param['taskid'];
+        $taskid =17;// $param['taskid'];
         if(empty($taskid)){
             exit(json_encode(array('staus'=>0,"message"=>'wrong')));
         }
-        $task = D("Task")->getNextTask($taskid);
-        $task['staus']=1;
-        exit(json_encode($task));
+        $task = D("Task")->getNextLevel($taskid);
+        if(empty($task)){
+            exit(json_encode(array('staus'=>0,'message'=>"no task")));
+        }else{
+            $task['staus']=1;
+            exit(json_encode($task));
+        }
     }
 
     public function ajax_alltask(){
@@ -105,22 +109,28 @@ class IndexController extends Controller {
         }
 
         $text = '';
-        $key = null;
+        $key = array();
         $path = C('CVSPATH');
-
-        while($atask = D("Task")->getAllOpt($task,100)){
+        $page = 0;
+        $tta=M("TaskLevel")->where("taskid=$task")->select();
+        $level = array_pop($tta)['level'];
+        $fp = fopen($path, 'a');
+        while($atask = D("Task")->getOutOpt($task,$level,100,$page)){
+            $page++;
             foreach($atask as $k=>$v){
                 $ar = json_decode($v['content']);
+                $item = [];
                 foreach($ar as $bv){
-                    if($key==null){
-                        $key=array_keys($bv);
-                        $text .=" ,".implode(',',$key)."\n";
+                    foreach($bv as $kl=>$vl){
+                        $key[$kl]=1;
+                        $item[]=iconv("gb2312","utf-8",$vl);
                     }
-                    $text .="$k,".implode(',',array_values($bv))+"\n";
                 }
-                file_put_contents($path,$text.PHP_EOL, FILE_APPEND);
+                fputcsv($fp,$item);
             }
         }
+
+
         echo "<a href='$path'>下载</a>";
     }
 

@@ -25,9 +25,10 @@ function getCookie(c_name)
 
 
 function beastify(request, sender, sendResponse) {
-  if(getCookie("begin")==1){
+  console.log("getCookie",getCookie("begin"));
+  //if(getCookie("begin")==1){
     insertBeast();
-  }
+  //}
   browser.runtime.onMessage.removeListener(beastify);
 }
 
@@ -39,7 +40,7 @@ function insertBeast() {
 function onUpdate(setting){
   var sp = setting['scripts'];
   if(sp){
-    eval(sp);
+    //eval(sp);
   }
   try{
     var b = getSpiderData();
@@ -67,10 +68,5 @@ beastify();
 browser.runtime.onMessage.addListener(beastify);
 
 function getSpiderData(){
-  //var back = [];
-  //var ms = document.querySelectorAll('.cla');
-  //for(var i=0;i<ms.length;i++){
-  //    back.push(ms[i].innerHTML);
-  //}
-  return [];
+  return [1];
 }
