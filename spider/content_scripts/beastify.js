@@ -39,7 +39,7 @@ function insertBeast() {
 function onUpdate(setting){
   var sp = setting['scripts'];
   if(sp){
-    //eval(sp);
+    eval(sp);
   }
   try{
     var b = getSpiderData();
