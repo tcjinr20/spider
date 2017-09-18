@@ -115,20 +115,25 @@ class IndexController extends Controller {
         $tta=M("TaskLevel")->where("taskid=$task")->select();
         $level = array_pop($tta)['level'];
         $fp = fopen($path, 'a');
-        while($atask = D("Task")->getOutOpt($task,$level,100,$page)){
+        $puthead = true;
+        $atask = D("Task")->getOutOpt($task,$level,3,$page);
             $page++;
             foreach($atask as $k=>$v){
                 $ar = json_decode($v['content']);
                 $item = [];
                 foreach($ar as $bv){
                     foreach($bv as $kl=>$vl){
-                        $key[$kl]=1;
-                        $item[]=iconv("gb2312","utf-8",$vl);
+                        $key[]=$kl;
+                        $item[]=iconv("utf-8","utf-8",$vl);
                     }
+                }
+                if($puthead){
+                    fputcsv($fp,$key);
+                    $puthead=false;
                 }
                 fputcsv($fp,$item);
             }
-        }
+
 
 
         echo "<a href='$path'>下载</a>";
