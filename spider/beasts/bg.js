@@ -6,7 +6,7 @@ var param = '';
 var curtab;
 var delay = 2000;//刷新频率
 var serpack=[];//发送服务端的数据包
-var inttime = 0;
+var inttime = -1;
 const serhost = 'http://spider.com/index.php/home';
 
 function handleMessage(request, sender, sendResponse) {
@@ -19,12 +19,11 @@ function handleMessage(request, sender, sendResponse) {
 function sendByPack(){
     if(inttime!=0)return;
     inttime = setInterval(function(){
-        console.log('serpack',serpack);
         if(serpack.length>0){
             getFrom("/index/ajax_form",serpack.shift());
         }else{
             clearInterval(inttime);
-            inttime=0;
+            inttime=-1;
         }
     },delay);
 }
@@ -83,19 +82,19 @@ function getFrom(url,obj,cookie){
              }else{
                  curtab = browser.tabs.create({url:param['url']});
              }
-            //if(cookie){
-            //    if(param['url']){
-            //        browser.cookies.set({
-            //            url: param['url'],
-            //            name: "begin",
-            //            value: "1"
-            //        }).then(function(){
-            //            console.log("set cookie  right");
-            //        },function(){
-            //            console.log("set cookie wrong")
-            //        });
-            //    }
-            //}
+            if(cookie){
+                if(param['url']){
+                    browser.cookies.set({
+                        url: param['url'],
+                        name: "begin",
+                        value: "1"
+                    }).then(function(){
+                        console.log("set cookie  right");
+                    },function(){
+                        console.log("set cookie wrong")
+                    });
+                }
+            }
         }
     });
 }

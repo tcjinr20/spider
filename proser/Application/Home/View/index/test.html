@@ -35,19 +35,20 @@
         var bb = document.querySelectorAll(".contact>p")[0];
        var label = ['<em>地址：</em>',"<em>电话：</em>","<em>传真：</em>","<em>Email：</em>","<em>公司网址：</em>","<em>主营产品：</em>"];
         var lab = ['地址',"电话","传真","Email","公司网址","主营产品"];
-        var nn = bb.innerHTML.split('<br>');
-        var back = [];
         var div = document.createElement('div');
         document.body.appendChild(div);
-        for(var i=0;i<nn.length;i++){
-            var bm = nn[i].replace(label[i],'');
-            div.innerHTML=bm;
+        var back = [];
+        var phtml= bb.innerHTML;
+        for(var i= 0;i<label.length;i++){
+            var p = phtml.indexOf(label[i]);
+            var q= phtml.indexOf('<br>',p);
+            if(q==-1)q=phtml.length;
+            var stc = phtml.substring(p+label[i].length,q);
             var mm = {};
-            mm[lab[i]] = div.textContent.replace(/(^\s+)|(\s+$)/g,"");;
-
+            div.innerHTML=stc;
+            mm[lab[i]]=div.textContent.replace(/(^\s+)|(\s+$)/g,"");
             back.push(mm);
         }
-        console.log(back)
         return back;
     }
     getSpiderData();

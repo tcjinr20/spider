@@ -25,10 +25,9 @@ function getCookie(c_name)
 
 
 function beastify(request, sender, sendResponse) {
-  console.log("getCookie",getCookie("begin"));
-  //if(getCookie("begin")==1){
+  if(getCookie("begin")==1){
     insertBeast();
-  //}
+  }
   browser.runtime.onMessage.removeListener(beastify);
 }
 
