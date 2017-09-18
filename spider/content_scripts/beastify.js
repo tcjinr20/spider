@@ -25,6 +25,7 @@ function getCookie(c_name)
 
 
 function beastify(request, sender, sendResponse) {
+  console.log('getCookie',getCookie("begin"));
   if(getCookie("begin")==1){
     insertBeast();
   }
@@ -38,6 +39,7 @@ function insertBeast() {
 
 function onUpdate(setting){
   var sp = setting['scripts'];
+
   if(sp){
     eval(sp);
   }

@@ -15,9 +15,9 @@ function handleMessage(request, sender, sendResponse) {
         sendByPack();
     }
 }
-
+var endt=0;
 function sendByPack(){
-    if(inttime!=0)return;
+    if(inttime!=-1)return;
     inttime = setInterval(function(){
         if(serpack.length>0){
             getFrom("/index/ajax_form",serpack.shift());
@@ -33,7 +33,7 @@ browser.runtime.onMessage.addListener(handleMessage);
 
 function sendToSer(url,param){
     var fd = buildParam(param);
-    const requestURL = serhost+url+"?XDEBUG_SESSION_START=13913";
+    const requestURL = serhost+url;
     const requestHeaders = new Headers();
     const driveRequest = new Request(requestURL, {
         method: "POST",
@@ -85,11 +85,11 @@ function getFrom(url,obj,cookie){
             if(cookie){
                 if(param['url']){
                     browser.cookies.set({
-                        url: param['url'],
+                        url: getHost(param['url']),
                         name: "begin",
                         value: "1"
-                    }).then(function(){
-                        console.log("set cookie  right");
+                    }).then(function(ce){
+                        console.log("set cookie  right",ce);
                     },function(){
                         console.log("set cookie wrong")
                     });
@@ -97,6 +97,13 @@ function getFrom(url,obj,cookie){
             }
         }
     });
+}
+function getHost(url){
+    var p = url.indexOf('/',7);
+    var host=url.substring(0,p);
+    var arr = host.split(".");
+    var pro = arr[0].substring(0,arr[0].indexOf('//')+2)
+    return pro+"www."+arr[arr.length-2]+"."+arr[arr.length-1];
 }
 
 function benginfrompanel(taskid,lay){
