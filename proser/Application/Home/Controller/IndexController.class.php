@@ -3,6 +3,12 @@ namespace Home\Controller;
 use Think\Controller;
 
 class IndexController extends Controller {
+
+    public function _initialize(){
+        header('Access-Control-Allow-Origin:*');
+        header('Access-Control-Allow-Methods:POST');
+        header('Access-Control-Allow-Headers:x-requested-with,content-type');
+    }
     public function index(){
         $this->tasks=D('Task')->getAllTask();
         $this->display();
@@ -27,9 +33,6 @@ class IndexController extends Controller {
     }
 
     public function ajax_form(){
-        header('Access-Control-Allow-Origin:*');
-        header('Access-Control-Allow-Methods:POST');
-        header('Access-Control-Allow-Headers:x-requested-with,content-type');
         $param = I("param",[]);
         $optionid =$param['optionid'];
         $taskid=$param['taskid'];

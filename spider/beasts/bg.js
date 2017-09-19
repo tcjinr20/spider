@@ -7,7 +7,7 @@ var curtab;
 var delay = 2000;//刷新频率
 var serpack=[];//发送服务端的数据包
 var inttime = -1;
-const serhost = 'http://spider.com/index.php/home';
+const serhost = 'http://basezhushou.cn/home';
 
 function handleMessage(request, sender, sendResponse) {
     console.log(request)
@@ -34,7 +34,7 @@ browser.runtime.onMessage.addListener(handleMessage);
 
 function sendToSer(url,param){
     var fd = buildParam(param);
-    const requestURL = serhost+url+"?XDEBUG_SESSION_START=12997";
+    const requestURL = serhost+url;
     const requestHeaders = new Headers();
     const driveRequest = new Request(requestURL, {
         method: "POST",
@@ -72,6 +72,7 @@ function buildParam(param){
 
 function getFrom(url,obj,cookie){
     sendToSer(url,obj).then(function(p){
+
         param=p;
         if(param['url']){
             param['url']=param['url'].replace('supply','contact');

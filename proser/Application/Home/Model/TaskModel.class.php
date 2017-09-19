@@ -17,7 +17,7 @@ class TaskModel extends Model
         $w['level']=$level;
         $w['taskid']=$tid;
         $w['staus']=$staus;
-        $option = M("TaskOption")->where($w)->order("id")->limit(1)->find();
+        $option = M("TaskOption")->where($w)->order("id desc")->limit(1)->find();
         return $option;
     }
 
@@ -29,7 +29,7 @@ class TaskModel extends Model
     }
 
     public function getNextLevel($tid){
-        $level=M('TaskLevel')->where("taskid=$tid and staus=0")->limit(1)->find();
+        $level=M('TaskLevel')->where("taskid=$tid and staus=0")->order('id desc')->limit(1)->find();
         if(empty($level)){
             return false;
         }
