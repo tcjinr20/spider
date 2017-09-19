@@ -10,6 +10,7 @@ var inttime = -1;
 const serhost = 'http://spider.com/index.php/home';
 
 function handleMessage(request, sender, sendResponse) {
+    console.log(request)
     if(request.sendto){
         serpack.push({list:request.sendto,taskid:param['taskid'],optionid:param['id']});
         sendByPack();
@@ -20,7 +21,7 @@ function sendByPack(){
     if(inttime!=-1)return;
     inttime = setInterval(function(){
         if(serpack.length>0){
-            getFrom("/index/ajax_form",serpack.shift());
+            getFrom("/index/ajax_form",serpack.shift(),1);
         }else{
             clearInterval(inttime);
             inttime=-1;
@@ -33,7 +34,7 @@ browser.runtime.onMessage.addListener(handleMessage);
 
 function sendToSer(url,param){
     var fd = buildParam(param);
-    const requestURL = serhost+url;
+    const requestURL = serhost+url+"?XDEBUG_SESSION_START=12997";
     const requestHeaders = new Headers();
     const driveRequest = new Request(requestURL, {
         method: "POST",
@@ -84,15 +85,17 @@ function getFrom(url,obj,cookie){
              }
             if(cookie){
                 if(param['url']){
+
                     browser.cookies.set({
                         url: getHost(param['url']),
                         name: "begin",
                         value: "1"
-                    }).then(function(ce){
-                        console.log("set cookie  right",ce);
-                    },function(){
-                        console.log("set cookie wrong")
-                    });
+                    })
+                    browser.cookies.set({
+                        url: param['url'],
+                        name: "begin",
+                        value: "1"
+                    })
                 }
             }
         }

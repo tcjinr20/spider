@@ -45,7 +45,9 @@ function onUpdate(setting){
   }catch(e){
     var b = [];
   }
-  console.log(b);
+  if(!b.length){
+    b=[1];
+  }
   var sending = browser.runtime.sendMessage({
     sendto: b
   });

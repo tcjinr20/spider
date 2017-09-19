@@ -36,7 +36,7 @@ class IndexController extends Controller {
         $list=$param['list'];
         if(IS_POST && $list){
             D("Task")->backTask($optionid,$list);
-            $task = D("Task")->getNextTask($taskid);
+            $task = D("Task")->getNextLevel($taskid);
             $task['staus']=1;
             exit(json_encode($task));
         }
@@ -44,7 +44,7 @@ class IndexController extends Controller {
 
     public function ajax_next(){
         $param = I('param',[]);
-        $taskid =17;// $param['taskid'];
+        $taskid =$param['taskid'];
         if(empty($taskid)){
             exit(json_encode(array('staus'=>0,"message"=>'wrong')));
         }

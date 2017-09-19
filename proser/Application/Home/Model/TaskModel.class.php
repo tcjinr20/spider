@@ -13,37 +13,11 @@ use Think\Model;
 
 class TaskModel extends Model
 {
-    public function getNextTask($tid){
-        $level=M('TaskLevel')->where("taskid=$tid and staus=0")->order('id')->find();
-        if(empty($level)){
-            if(IS_AJAX){
-                echo (json_encode(array('staus'=>0,'message'=>"no task")));
-                return false;
-            }else{
-                return false;
-            }
-        }
-        $w['level']=$level['level'];
-        $w['taskid']=$tid;
-        $w['staus']=0;
-        $option = M("TaskOption")->where($w)->limit(1)->find();
-        if(empty($option)){
-            M('TaskLevel')->where("id=".$level['id'])->save(array('staus'=>1));
-            echo (json_encode(array('staus'=>0,'message'=>"no task")));
-            return false;
-        }
-        $ret['id']=$option['id'];
-        $ret['taskid'] = $tid;
-        $ret['url'] = $option['url'];
-        $ret['scripts'] = $level['scripts'];
-        return $ret;
-    }
-
     private function getopt($tid,$level,$staus=0){
         $w['level']=$level;
         $w['taskid']=$tid;
         $w['staus']=$staus;
-        $option = M("TaskOption")->where($w)->limit(1)->find();
+        $option = M("TaskOption")->where($w)->order("id")->limit(1)->find();
         return $option;
     }
 
@@ -52,10 +26,6 @@ class TaskModel extends Model
         $g['staus']=$staus;
         $option = M("TaskOption")->where($w)->save($g);
         return $option;
-    }
-
-    private function echoBack(){
-
     }
 
     public function getNextLevel($tid){
@@ -108,7 +78,7 @@ class TaskModel extends Model
 
     public function backTask($optionid,$list){
         $d['content'] = json_encode($list);
-        $d['updatetime'] = date("Y-d-m ",time());
+        $d['updatetime'] = time();
         $d['staus'] =1;
         M("TaskOption")->where('id='.$optionid)->save($d);
     }
