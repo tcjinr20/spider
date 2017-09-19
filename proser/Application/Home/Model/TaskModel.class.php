@@ -47,6 +47,13 @@ class TaskModel extends Model
         return $option;
     }
 
+    private function setOpt($optid,$staus=0){
+        $w['id']=$optid;
+        $g['staus']=$staus;
+        $option = M("TaskOption")->where($w)->save($g);
+        return $option;
+    }
+
     private function echoBack(){
 
     }
@@ -75,15 +82,22 @@ class TaskModel extends Model
                     $put[]=$w;
                 }
                 M("TaskOption")->addAll($put);
+                $this->setOpt($opt['id'],2);
             }
         }
 
         $option = $this->getopt($tid,$level['level'],0);
         if(empty($option)){
-            M('TaskLevel')->where("id=".$level['id'])->save(array('staus'=>1));
             $opp = $this->getNextLevel($tid);
             if($opp)return$opp;
-            return false;
+            else{
+                M('TaskLevel')->where("id=".$level['id'])->save(array('staus'=>1));
+                $opp = $this->getNextLevel($tid);
+                if($opp){
+                    return $opp;
+                }
+                return false;
+            }
         }
         $ret['id']=$option['id'];
         $ret['taskid'] = $tid;

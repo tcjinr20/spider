@@ -23,6 +23,7 @@ function getCookie(c_name)
 }
 
 function beastify(request, sender, sendResponse) {
+  console.log('getCookie',getCookie("begin"));
   if(getCookie("begin")==1){
     insertBeast();
   }
@@ -31,11 +32,11 @@ function beastify(request, sender, sendResponse) {
 
 function insertBeast() {
   browser.storage.local.get().then(onUpdate, onError);
-
 }
 
 function onUpdate(setting){
   var sp = setting['scripts'];
+
   if(sp){
     eval(sp);
   }
