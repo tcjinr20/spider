@@ -22,8 +22,6 @@ function getCookie(c_name)
   return ""
 }
 
-
-
 function beastify(request, sender, sendResponse) {
   if(getCookie("begin")==1){
     insertBeast();
