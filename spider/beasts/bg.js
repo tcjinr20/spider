@@ -136,5 +136,16 @@ getActiveTab().then(function(tabs){
     }
 })
 
+browser.webRequest.onBeforeSendHeaders.addListener(rewriteUserAgentHeader,{urls: ["<all_urls>"]},["blocking", "requestHeaders"]);
+browser.webRequest.onErrorOccurred.addListener(rewriteError,{urls: ["<all_urls>"]})
+function rewriteUserAgentHeader(e){
+    if(['script','image','stylesheet'].indexOf(e.type)!=-1){
+        return {cancel: true};
+    }
+}
+function rewriteError(){
+
+}
+
 
 
