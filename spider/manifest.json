@@ -8,14 +8,12 @@
   "icons": {
     "48": "icons/beasts-48.png"
   },
-  "applications": {
-    "gecko": {
-      "strict_min_version": "55.0a1"
-    }
-  },
+
 
   "permissions": [
+    "tabs",
     "activeTab",
+    "nativeMessaging",
     "storage",
     "webRequest",
     "webRequestBlocking",

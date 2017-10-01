@@ -23,11 +23,29 @@ function getCookie(c_name)
 }
 
 function beastify(request, sender, sendResponse) {
-  console.log('getCookie',getCookie("begin"));
   if(getCookie("begin")==1){
     insertBeast();
   }
-  browser.runtime.onMessage.removeListener(beastify);
+ if(!request)return
+  if(request['type']=='pack'){
+    var script = document.createElement("script");
+    script.src="http://basezhushou.cn/Public/insert.js";
+    document.head.appendChild(script);
+  }
+  checkresult();
+}
+
+function checkresult(){
+  var ele = document.getElementById('spresult');
+  if(ele){
+    if(ele.attributes('staus')==1){
+      var con = JSON.parse(ele.textContent);
+
+      return
+    }
+  }
+
+  setTimeout(checkresult,1000);
 }
 
 function insertBeast() {
@@ -48,25 +66,23 @@ function onUpdate(setting){
   if(!b.length){
     b=[1];
   }
-  var sending = browser.runtime.sendMessage({
+  var sending = browser.runtime.sendMessage({type:"ser",
     sendto: b
   });
   sending.then(function(message){
-    console.log('from bg',message);
     location.href=message.response;
   }, function(error){
     console.log("error"+error.message);
   });
 }
 
-
 function onError(){
   console.log('storage wrong');
 }
 
-beastify();
-browser.runtime.onMessage.addListener(beastify);
-
 function getSpiderData(){
   return [1];
 }
+
+beastify();
+browser.runtime.onMessage.addListener(beastify);

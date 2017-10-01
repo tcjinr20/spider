@@ -9,8 +9,7 @@ var serpack=[];//发送服务端的数据包
 var inttime = -1;
 const serhost = 'http://basezhushou.cn/home';
 
-function handleMessage(request, sender, sendResponse) {
-    console.log(request)
+function handleMessage(request, sender, sendResponse){
     if(request.sendto){
         serpack.push({list:request.sendto,taskid:param['taskid'],optionid:param['id']});
         sendByPack();
@@ -79,11 +78,7 @@ function getFrom(url,obj,cookie){
         }
         browser.storage.local.set(param);
         if(param.staus==1 && param['url']){
-             if(curtab){
-                 browser.tabs.update(curtab.id,{url:param['url']});
-             }else{
-                 curtab = browser.tabs.create({url:param['url']});
-             }
+            openTab(param['url']);
             if(cookie){
                 if(param['url']){
 
@@ -115,6 +110,20 @@ function benginfrompanel(taskid,lay){
     getFrom('/index/ajax_next',{'taskid':taskid},1);
 }
 
+function getTab(){
+    return curtab;
+}
+
+function openTab(url){
+    if(curtab){
+        browser.tabs.update(curtab.id,{url:url});
+    }else{
+        browser.tabs.create({url:url}).then(function(tab){
+            curtab=tab;
+        });
+    }
+}
+
 function getSer(){
     return serhost;
 }
@@ -136,16 +145,23 @@ getActiveTab().then(function(tabs){
     }
 })
 
-browser.webRequest.onBeforeSendHeaders.addListener(rewriteUserAgentHeader,{urls: ["<all_urls>"]},["blocking", "requestHeaders"]);
-browser.webRequest.onErrorOccurred.addListener(rewriteError,{urls: ["<all_urls>"]})
-function rewriteUserAgentHeader(e){
-    if(['script','image','stylesheet'].indexOf(e.type)!=-1){
-        return {cancel: true};
+function ClearMine(){
+    var self= this;
+    self.active = true;
+    browser.webRequest.onBeforeSendHeaders.addListener(rewriteUserAgentHeader,{urls: ["<all_urls>"]},["blocking", "requestHeaders"]);
+    browser.webRequest.onErrorOccurred.addListener(rewriteError,{urls: ["<all_urls>"]})
+    function rewriteUserAgentHeader(e){
+        if(!self.active)return;
+        if(['script','image','stylesheet'].indexOf(e.type)!=-1){
+            return {cancel: true};
+        }
+    }
+    function rewriteError(){
+
     }
 }
-function rewriteError(){
 
-}
+
 
 
 

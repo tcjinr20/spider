@@ -110,16 +110,15 @@ class IndexController extends Controller {
         if(empty($task)){
             exit("参数错误");
         }
-
-        $text = '';
+        header('Content-Type: application/vnd.ms-excel');
+        header('Content-Disposition: attachment;filename="user.csv"');
+        header('Cache-Control: max-age=0');
         $key = array();
-        $path = C('CVSPATH');
         $page = 0;
         $tta=M("TaskLevel")->where("taskid=$task")->select();
         $level = array_pop($tta)['level'];
-        $fp = fopen($path, 'a');
+        $fp = fopen('php://output', 'w') or die("can't open php://output");
         $puthead = true;
-
         while($atask = D("Task")->getOutOpt($task,$level,1000,$page)){
             $page++;
             foreach($atask as $k=>$v){
@@ -131,14 +130,16 @@ class IndexController extends Controller {
                         $item[]=iconv("utf-8","utf-8",$vl);
                     }
                 }
+                $item[]=$v['url'];
                 if($puthead){
+                    $key[]='数据来源';
                     fputcsv($fp,$key);
                     $puthead=false;
                 }
                 fputcsv($fp,$item);
             }
         }
-        echo "<a href='$path'>下载</a>";
+        fclose($fp);
     }
 
     public function test(){

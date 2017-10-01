@@ -78,7 +78,7 @@ class TaskModel extends Model
 
     public function backTask($optionid,$list){
         $d['content'] = json_encode($list);
-        $d['updatetime'] = time();
+        $d['updatetime'] = date("Y-m-d H:i:s",time());
         $d['staus'] =1;
         M("TaskOption")->where('id='.$optionid)->save($d);
     }
