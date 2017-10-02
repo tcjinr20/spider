@@ -1,0 +1,62 @@
+<extend name="base/layout" />
+
+<block name="body">
+    <div class="layui-btn-group">
+        <a class="layui-btn" href="{:U('index/pubTask')}">增加</a>
+    </div>
+    <a class="btn btn-default" >添加</a>
+    <ul class="list-group">
+            <table class="layui-table">
+                <colgroup>
+                    <col width="150">
+                    <col width="200">
+                    <col>
+                </colgroup>
+                <thead>
+                <tr>
+                    <th>项目</th>
+                    <th>操作</th>
+                </tr>
+                </thead>
+                <tbody>
+                <volist name="tasks" id="vo">
+                <tr>
+                    <td>{$vo.name}</td>
+                    <td>
+                        <div class="layui-btn-group">
+                            <a class="layui-btn" href="{:U('index/exditform',array('id'=>$vo[id]))}">查看</a>
+                            <a class="layui-btn" href="{:U('index/delform',array('id'=>$vo[id]))}">删除</a>
+                            <a class="layui-btn" href="{:U('index/putToCvs',array('id'=>$vo[id]))}">到处数据(cvs)</a>
+                            <button type="button" class="layui-btn" id="test1">
+                                上传文件
+                            </button>
+                        </div>
+                    </td>
+                </tr>
+                </volist>
+                </tbody>
+            </table>
+    </ul>
+</block>
+
+<block name="footscript">
+    <script>
+        layui.use('upload', function(){
+            var upload = layui.upload;
+            //执行实例
+            upload.render({
+                elem: '#test1' //绑定元素
+                ,url: '/common/upload/' //上传接口
+                ,accept: 'file' //普通文件
+                ,done: function(res){
+                    console.log(4566);
+                    console.log(res);
+                }
+                ,error: function(e){
+                    console.log(  e)
+                    //请求异常回调
+                }
+            });
+        });
+    </script>
+</block>

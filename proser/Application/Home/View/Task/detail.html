@@ -1,0 +1,41 @@
+<extend name="base/layout" />
+<block name="body">
+    <fieldset class="layui-elem-field">
+        <legend>{$task.name}</legend>
+        <div class="layui-field-box">
+            <div class="layui-row">
+                <table class="layui-table" lay-data="{height: '200', url:'/ajax/alevel/id/{$task.id}',page:true}">
+                    <thead>
+                        <tr>
+                            <th lay-data="{field:'id', width:80}">ID</th>
+                            <th lay-data="{field:'taskid', width:80}">taskid</th>
+                            <th lay-data="{field:'attrs', width:80}">属性</th>
+                            <th lay-data="{field:'staus', width:80}">状态</th>
+                            <th lay-data="{field:'level', width:177}">等级</th>
+                            <th lay-data="{field:'scripts', width:177}">脚本</th>
+                        </tr>
+                    </thead>
+                </table>
+            </div>
+            <div class="layui-row">
+                <table class="layui-table" lay-data="{height: '335', url:'/ajax/Aoption/id/{$task.id}'}">
+                    <thead>
+                    <tr>
+                        <th lay-data="{field:'id', width:80}">ID</th>
+                        <th lay-data="{field:'taskid', width:80}">taskid</th>
+                        <th lay-data="{field:'attrs', width:80}">属性</th>
+                        <th lay-data="{field:'staus', width:80}">状态</th>
+                        <th lay-data="{field:'level', width:177}">等级</th>
+                        <th lay-data="{field:'content', width:177}">脚本</th>
+                    </tr>
+                    </thead>
+                </table>
+            </div>
+        </div>
+    </fieldset>
+</block>
+<block name="footscript">
+    <script>
+        layui.use('table');
+    </script>
+</block>

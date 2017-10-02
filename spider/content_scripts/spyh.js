@@ -21,38 +21,61 @@ function getCookie(c_name)
   }
   return ""
 }
-
+var bdat=null;
 function beastify(request, sender, sendResponse) {
   if(getCookie("begin")==1){
     insertBeast();
   }
  if(!request)return
   if(request['type']=='pack'){
-    var script = document.createElement("script");
-    script.src="http://basezhushou.cn/Public/insert.js";
-    document.head.appendChild(script);
+    if(!document.getElementById("sptoolstaus")){
+      var script = document.createElement("script");
+      script.src="http://basezhushou.cn/Public/insert.js";
+      document.head.appendChild(script);
+      var dd = document.createElement("div");
+      dd.id='sptoolstaus';
+      dd.setAttribute('staus',1);
+      document.body.appendChild(dd);
+    }else{
+      document.getElementById("sptoolstaus").setAttribute('staus',1);
+    }
   }
-  checkresult();
+  bdat=request['data'];
 }
 
 function checkresult(){
   var ele = document.getElementById('spresult');
   if(ele){
-    if(ele.attributes('staus')==1){
+
+    if(ele.getAttribute('staus')==1){
       var con = JSON.parse(ele.textContent);
+      var obj = {};
+      obj['value']=con;
+      obj['key']=bdat;
+      browser.storage.local.get().then(function(obje){
+        var po = [];
+        if(obje['packval']){
+          po = obje['packval'];
+        }
+        po.push(obj);
+
+        browser.storage.local.set({'packval':po});
+        ele.setAttribute('staus',0)
+      });
 
       return
     }
   }
-
   setTimeout(checkresult,1000);
 }
+checkresult();
 
 function insertBeast() {
   browser.storage.local.get().then(onUpdate, onError);
 }
 
 function onUpdate(setting){
+  console.log(setting);
   var sp = setting['scripts'];
 
   if(sp){

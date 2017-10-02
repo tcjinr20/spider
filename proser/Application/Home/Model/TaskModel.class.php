@@ -104,12 +104,12 @@ class TaskModel extends Model
         return $task;
     }
 
-    public function getTaskByid($taskid){
+    public function getTaskByid($taskid,$optionlimit=20){
 //        $sql = "select a.*,b.scripts,b.attrs,c.url,c.level from sp_task a,sp_task_level b,sp_task_option c WHERE a.id=$taskid and b.taskid=$taskid and c.taskid=$taskid";
 //        $d = $this->query($sql);
         $a=$this->find($taskid);
         $b=M("TaskLevel")->where("taskid=$taskid")->select();
-        $c=M("TaskOption")->where("taskid=$taskid")->select();
+        $c=M("TaskOption")->where("taskid=$taskid")->limit($optionlimit)->select();
         return [$a,$b,$c];
     }
 

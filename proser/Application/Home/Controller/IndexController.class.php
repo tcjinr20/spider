@@ -8,6 +8,7 @@ class IndexController extends Controller {
         header('Access-Control-Allow-Origin:*');
         header('Access-Control-Allow-Methods:POST');
         header('Access-Control-Allow-Headers:x-requested-with,content-type');
+        $this->title="互联网web数据处理";
     }
     public function index(){
         $this->tasks=D('Task')->getAllTask();
@@ -30,6 +31,7 @@ class IndexController extends Controller {
         $this->level=$b;
         $this->option=$c;
         $this->display();
+
     }
 
     public function ajax_form(){

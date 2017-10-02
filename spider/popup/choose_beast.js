@@ -22,6 +22,23 @@ layui.use(['form','jquery'],function(){
       addItem();
     }else if(cls.contains('clear')){
       browser.storage.local.clear();
+    }else if(cls.contains('del')){
+      var trs = e.target.id.split("_");
+      var kkey = document.querySelector(".k_"+trs[1]).value;
+      browser.storage.local.get().then(function(obj){
+        if(obj['packval']){
+          var arr =obj['packval'];
+          for(var i=0;i<arr.length;i++){
+            if(arr[i]['key'][0]==kkey){
+              arr.splice(i,1);
+              var no = document.getElementById('p_'+trs[1]);
+              no.parentNode.removeChild(no);
+              browser.storage.local.set({'packval':arr});
+              return
+            }
+          }
+        }
+      });
     }
   })
 
@@ -29,10 +46,12 @@ layui.use(['form','jquery'],function(){
     k=k?k:'';
     v=v?v:'';
     itemnum++;
-    var item = '<tr>\
+    var item = '<tr id="p_'+itemnum+'">\
         <td><input class="layui-input k_'+itemnum+'" value="'+k+'"></td>\
         <td><input class="layui-input v_'+itemnum+'" value="'+v+'"></td>\
-        <td><input type="button" class="layui-btn find" value="Q" class="find" id="d_'+itemnum+'"></td>\
+        <td><input type="button" class="layui-btn find layui-btn-small" value="Q" id="d_'+itemnum+'">\
+        <input type="button" class="layui-btn del layui-btn-small" value="del" id="del_'+itemnum+'">\
+        </td>\
         </tr>';
     document.querySelector("tbody").innerHTML+=item;
   }
@@ -58,10 +77,10 @@ layui.use(['form','jquery'],function(){
   initdata();
 
   browser.storage.local.get().then(function(obj){
-    for(var s in obj){
-      var bb = s.split("_")
-      if(bb.length>1){
-        addItem(bb[0],obj[s]);
+    if(obj['packval']){
+      var arr =obj['packval'];
+      for(var i=0;i<arr.length;i++){
+        addItem(arr[i]['key'][0],arr[i]['value'][0]);
       }
     }
   });
