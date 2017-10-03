@@ -7,7 +7,7 @@ var curtab;
 var delay = 2000;//刷新频率
 var serpack=[];//发送服务端的数据包
 var inttime = -1;
-const serhost = 'http://basezhushou.cn/home';
+const serhost = 'http://spider.com';
 
 function handleMessage(request, sender, sendResponse){
     if(request.sendto){
@@ -20,7 +20,7 @@ function sendByPack(){
     if(inttime!=-1)return;
     inttime = setInterval(function(){
         if(serpack.length>0){
-            getFrom("/index/ajax_form",serpack.shift(),1);
+            getFrom("/ajax/ajax_form",serpack.shift(),1);
         }else{
             clearInterval(inttime);
             inttime=-1;
@@ -33,7 +33,7 @@ browser.runtime.onMessage.addListener(handleMessage);
 
 function sendToSer(url,param){
     var fd = buildParam(param);
-    const requestURL = serhost+url;
+    const requestURL = serhost+url+'?XDEBUG_SESSION_START=10681';
     const requestHeaders = new Headers();
     const driveRequest = new Request(requestURL, {
         method: "POST",
@@ -107,12 +107,19 @@ function getHost(url){
 
 function benginfrompanel(taskid,lay){
     delay=lay?lay:2000;
-    getFrom('/index/ajax_next',{'taskid':taskid},1);
+    getFrom('/ajax/ajax_next',{'taskid':taskid},1);
 }
 
 function getTab(){
     return curtab;
 }
+
+function sendSer(param){
+    sendToSer("/ajax/Spscript",param,0).then(function(p){
+        console.log(p)
+    });
+}
+
 
 function openTab(url){
     if(curtab){

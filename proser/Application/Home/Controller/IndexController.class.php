@@ -34,40 +34,6 @@ class IndexController extends Controller {
 
     }
 
-    public function ajax_form(){
-        $param = I("param",[]);
-        $optionid =$param['optionid'];
-        $taskid=$param['taskid'];
-        $list=$param['list'];
-        if(IS_POST && $list){
-            D("Task")->backTask($optionid,$list);
-            $task = D("Task")->getNextLevel($taskid);
-            $task['staus']=1;
-            exit(json_encode($task));
-        }
-    }
-
-    public function ajax_next(){
-        $param = I('param',[]);
-        $taskid =$param['taskid'];
-        if(empty($taskid)){
-            exit(json_encode(array('staus'=>0,"message"=>'wrong')));
-        }
-        $task = D("Task")->getNextLevel($taskid);
-        if(empty($task)){
-            exit(json_encode(array('staus'=>0,'message'=>"no task")));
-        }else{
-            $task['staus']=1;
-            exit(json_encode($task));
-        }
-    }
-
-    public function ajax_alltask(){
-        $d = D("Task")->getAllTask();
-        exit(json_encode($d));
-    }
-
-
     public function pubTask(){
         if(IS_POST){
             $taskname = I("taskname",'');

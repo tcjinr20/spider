@@ -29,12 +29,17 @@
 
     spTool.prototype.close = function(){
         if(self.act.classlist){
-            var indexs=[self.act.classlist];
+            var type=$('#switch').attr('checked')?1:2;
+            var indexs=[];
             $("#spinfo p").each(function(i,e){
                 if($(e).attr('staus')==1){
                     indexs.push(i);
                 }
             })
+            var po= {};
+            po['type']=type;
+            po['index']=indexs;
+            po['class']=self.act.classlist;
             spTool.__open = 0;
             $("#spresult").text(JSON.stringify(indexs)).attr('staus',1);
             layer.close(layer.index);
@@ -56,14 +61,7 @@
         <div class="layui-form-item">\
            <label class="layui-form-label">循环</label>\
             <div class="layui-input-block">\
-            <input type="radio" name="sex" value="1" title="是" checked>\
-            <input type="radio" name="sex" value="0" title="否" >\
-        </div>\
-        </div>\
-        <div class="layui-form-item">\
-            <label class="layui-form-label">抓取值</label>\
-            <div class="layui-input-block">\
-            <input type="text" placeholder="抓取值" id="spattrval" autocomplete="off" en class="layui-input" disabled>\
+                <input type="checkbox" checked id="switch" lay-skin="switch" lay-text="ON|OFF" lay-filter="switchTest">\
             </div>\
         </div>\
         <div class="layui-form-item">\
@@ -133,12 +131,17 @@
         var pre=null,old='';
         var selfm = this;
         var oldclick = null;
+
         selfm.begin= function(){
-            packstop = false;
-            document.body.addEventListener("mousemove",pack);
-            document.body.addEventListener("click",getpack);
-            //browser.runtime.sendMessage({"content": '开始提取：'+act});
+            if(packstop){
+                setTimeout(function(){
+                    document.body.addEventListener("mousemove",pack);
+                    document.body.addEventListener("click",getpack);
+                },100)
+                packstop = false;
+            }
         }
+
         selfm.update = function (level){
             if(!pre)return;
 
@@ -151,10 +154,15 @@
                 $("#spinfo").text("属性不存在");
                 return;
             }
-            selfm.classlist = new IterClass(level).getTar(pre);
-            var lists = document.querySelectorAll(selfm.classlist);
+            if($('#switch').attr('checked')){
+                selfm.classlist = new IterClass(level).getTar(pre);
+                var lists = document.querySelectorAll(selfm.classlist);
+            }else{
+                var path= new IterClass(level).readXPath(pre);
+                var lists = document.body.selectNodes(path);
+            }
+
             $('#spinfo').html('');
-            var str = '';
             for(var i =0;i<lists.length;i++){
                 $('#spinfo').append("<p style='cursor: hand' onclick='changeStaus(this)' staus='1'>"+i+":"+lists[i][att]+"</p>");
                 if(i>30){
@@ -163,12 +171,20 @@
                 }
             }
         }
+        selfm.stop=function (){
+            packstop = true;
+            document.body.removeEventListener("mousemove",pack)
+            document.body.removeEventListener("click",getpack);
+            if(pre)pre.style.border=old;
+        }
 
         function pack(e){
+            if(packstop)return
             if(pre){
                 pre.onclick= oldclick;
                 pre.style.border=old;
             }
+
             pre = e.target;
             old = pre.style.border;
             pre.style.border = "1px solid red";
@@ -177,50 +193,16 @@
         }
 
         function getpack(e){
-            if(!pre)return;
+            if(packstop||!pre)return;
             pre.onclick= oldclick;
             selfm.stop();
             selfm.update(0);
         }
-
-
-
-        function readXPath(element) {
-            if (element.id !== "") {//判断id属性，如果这个元素有id，则显 示//*[@id="xPath"]  形式内容
-                return '//*[@id=\"' + element.id + '\"]';
-            }
-            //这里需要需要主要字符串转译问题，可参考js 动态生成html时字符串和变量转译（注意引号的作用）
-            if (element == document.body) {//递归到body处，结束递归
-                return '/html/' + element.tagName.toLowerCase();
-            }
-            var ix = 1,//在nodelist中的位置，且每次点击初始化
-                siblings = element.parentNode.childNodes;//同级的子元素
-
-            for (var i = 0, l = siblings.length; i < l; i++) {
-                var sibling = siblings[i];
-                //如果这个元素是siblings数组中的元素，则执行递归操作
-                if (sibling == element) {
-                    return arguments.callee(element.parentNode) + '/' + element.tagName.toLowerCase() + '[' + (ix) + ']';
-                    //如果不符合，判断是否是element元素，并且是否是相同元素，如果是相同的就开始累加
-                } else if (sibling.nodeType == 1 && sibling.tagName == element.tagName) {
-                    ix++;
-                }
-            }
-        };
-
-        selfm.stop=function (){
-            packstop = true;
-            document.body.removeEventListener("mousemove",pack)
-            document.body.removeEventListener("click",getpack);
-            pre.style.border=old;
-        }
     }
-
 
     function IterClass(level){
         var selfm= this;
         selfm.level = level;
-
         selfm.getTar= function(tar){
             var cla = selfm.getClass(tar);
             var supcla = '';
@@ -248,9 +230,35 @@
             }
         }
 
+        selfm.readXPath = function (element) {
+            for(var i = 0;i<selfm.level;i++){
+                element = element.parentNode;
+            }
+
+            if (element.id !== "") {//判断id属性，如果这个元素有id，则显 示//*[@id="xPath"]  形式内容
+                return '//*[@id=\"' + element.id + '\"]';
+            }
+            //这里需要需要主要字符串转译问题，可参考js 动态生成html时字符串和变量转译（注意引号的作用）
+            if (element == document.body) {//递归到body处，结束递归
+                return '/html/' + element.tagName.toLowerCase();
+            }
+            var ix = 1,//在nodelist中的位置，且每次点击初始化
+                siblings = element.parentNode.childNodes;//同级的子元素
+
+            for (var i = 0, l = siblings.length; i < l; i++) {
+                var sibling = siblings[i];
+                //如果这个元素是siblings数组中的元素，则执行递归操作
+                if (sibling == element) {
+                    return arguments.callee(element.parentNode) + '/' + element.tagName.toLowerCase() + '[' + (ix) + ']';
+                    //如果不符合，判断是否是element元素，并且是否是相同元素，如果是相同的就开始累加
+                } else if (sibling.nodeType == 1 && sibling.tagName == element.tagName) {
+                    ix++;
+                }
+            }
+        };
+
         return selfm;
     }
-
     Element.prototype.selectNodes = function(sXPath) {
         var oEvaluator = new XPathEvaluator();
         var oResult = oEvaluator.evaluate(sXPath, this, null,
@@ -282,6 +290,7 @@
             return null;
         }
     };
+
     win.sptool = new spTool();
 })(window)
 

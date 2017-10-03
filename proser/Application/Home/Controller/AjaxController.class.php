@@ -57,4 +57,53 @@ class AjaxController extends Controller
         }
         $this->ajaxReturn($res);
     }
+
+    public function ajax_form(){
+        $param = I("param",[]);
+        $optionid =$param['optionid'];
+        $taskid=$param['taskid'];
+        $list=$param['list'];
+        if(IS_POST && $list){
+            D("Task")->backTask($optionid,$list);
+            $task = D("Task")->getNextLevel($taskid);
+            $task['staus']=1;
+            exit(json_encode($task));
+        }
+    }
+
+    public function ajax_next(){
+        $param = I('param',[]);
+        $taskid =$param['taskid'];
+        if(empty($taskid)){
+            exit(json_encode(array('staus'=>0,"message"=>'wrong')));
+        }
+        $task = D("Task")->getNextLevel($taskid);
+        if(empty($task)){
+            exit(json_encode(array('staus'=>0,'message'=>"no task")));
+        }else{
+            $task['staus']=1;
+            exit(json_encode($task));
+        }
+    }
+
+    public function ajax_alltask(){
+        $d = D("Task")->getAllTask();
+        exit(json_encode($d));
+    }
+
+    public function Spscript(){
+        $param = I('param');
+        $level=$param['level'];
+        $taskid=$param['taskid'];
+        $P['scripts']=$param['script'];
+        $P['scripttype']=$param['scripttype'];
+        if(M("TaskLevel")->where('taskid='.$taskid.' and level='.$level)->select()){
+            M("TaskLevel")->where('taskid='.$taskid.' and level='.$level)->update($P);
+        }else{
+            $P['taskid']=$taskid;
+            $P['level']=$level;
+            M("TaskLevel")->add($P);
+        }
+        $this->ajaxReturn(array(code=>0,msg=>"ok"));
+    }
 }

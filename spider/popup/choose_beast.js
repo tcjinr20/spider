@@ -39,20 +39,36 @@ layui.use(['form','jquery'],function(){
           }
         }
       });
+    }else if(cls.contains('save')){
+      //browser.tabs.sendMessage(tab.id, {type:"pack",data:[key,arr[1]]});
+      browser.storage.local.get().then(function(obj){
+        if(obj['packval']){
+          var arr =obj['packval'];
+          var p = {};
+          p['level'] = $('#levelopt').val();
+          p['script']=arr;
+          p['taskid']=$("#list").val();
+          p['scripttype']=arr['type'];
+          bg.sendSer(p);
+        }
+      });
     }
   })
 
-  function addItem(k,v){
-    k=k?k:'';
-    v=v?v:'';
+  function addItem(k,v,c) {
+    k = k ? k : '';
+    v = v ? v : '';
     itemnum++;
-    var item = '<tr id="p_'+itemnum+'">\
-        <td><input class="layui-input k_'+itemnum+'" value="'+k+'"></td>\
-        <td><input class="layui-input v_'+itemnum+'" value="'+v+'"></td>\
-        <td><input type="button" class="layui-btn find layui-btn-small" value="Q" id="d_'+itemnum+'">\
-        <input type="button" class="layui-btn del layui-btn-small" value="del" id="del_'+itemnum+'">\
-        </td>\
-        </tr>';
+    var item = '<tr id="p_' + itemnum + '">\
+        <td><input class="layui-input k_' + itemnum + '" value="' + k + '"></td>\
+        <td><input class="layui-input v_' + itemnum + '" value="' + v + '"></td>'
+    if(c==null){
+      item+='<td><input type="button" class="layui-btn find layui-btn-small" value="Q" id="d_'+itemnum+'">';
+    }else{
+      item+='<td><input type="button" class="layui-btn del layui-btn-small" value="del" id="del_'+itemnum+'"></td>';
+    }
+    item+='</tr>';
+
     document.querySelector("tbody").innerHTML+=item;
   }
 
@@ -62,9 +78,8 @@ layui.use(['form','jquery'],function(){
     bg.benginfrompanel(tid,deplay);
   }
 
-
   function initdata(){
-    $.getJSON(bg.getSer()+"/index/ajax_alltask",function(data){
+    $.getJSON(bg.getSer()+"/ajax/ajax_alltask",function(data){
       if(data && data.length){
         alldata=data;
         for(var i =0;i<data.length;i++){
@@ -80,7 +95,7 @@ layui.use(['form','jquery'],function(){
     if(obj['packval']){
       var arr =obj['packval'];
       for(var i=0;i<arr.length;i++){
-        addItem(arr[i]['key'][0],arr[i]['value'][0]);
+        addItem(arr[i]['key'][0],arr[i]['value']['class'],1);
       }
     }
   });
