@@ -1,0 +1,105 @@
+<include file="base/head"/>
+<div class="layui-container">
+    <div class="layui-row">
+        <include file="base/headmenu"/>
+    </div>
+    <div class="layui-row">
+        <div class="layui-col-md6 layui-col-md-offset3">
+            <div class="layui-tab">
+                <ul class="layui-tab-title">
+                    <li class="layui-this">登录</li>
+                    <li>注册</li>
+                </ul>
+                <div class="layui-tab-content">
+                    <div class="layui-tab-item layui-show">
+                        <form class="layui-form" id="log">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">用户名</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="username" required lay-verify="required" autocomplete="off" placeholder="请输用户名" class="layui-input">
+                                </div>
+                                <div class="layui-form-mid layui-word-aux">6位数</div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">密码框</label>
+                                <div class="layui-input-inline">
+                                    <input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+                                </div>
+                                <div class="layui-form-mid layui-word-aux">6位数</div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button class="layui-btn" lay-filter="formlog">登录</button>
+                                </div>
+                            </div>
+                            <input type="hidden" name="act" value="log">
+                        </form>
+                    </div>
+                    <div class="layui-tab-item">
+                        <form class="layui-form" id="reg">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">用户名</label>
+                                <div class="layui-input-inline">
+                                    <input type="text" name="username" required lay-verify="required" autocomplete="off" placeholder="请输用户名" class="layui-input">
+                                </div>
+                                <div class="layui-form-mid layui-word-aux">6位数</div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">密码框</label>
+                                <div class="layui-input-inline">
+                                    <input type="password" name="password" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+                                </div>
+                                <div class="layui-form-mid layui-word-aux">6位数</div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">重复密码框</label>
+                                <div class="layui-input-inline">
+                                    <input type="password" name="repassword" required lay-verify="required" placeholder="请输入密码" autocomplete="off" class="layui-input">
+                                </div>
+                                <div class="layui-form-mid layui-word-aux">6位数</div>
+                            </div>
+                            <div class="layui-form-item">
+                                <div class="layui-input-block">
+                                    <button class="layui-btn" lay-submit lay-filter="formreg">注册</button>
+                                </div>
+                            </div>
+                            <input type="hidden" name="act" value="reg">
+                        </form>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+    <script>
+        layui.use(['element','layer'],function(){
+            var $ =layui.jquery,layer =layui.layer;
+            $("[lay-filter=formlog]").on('click',function(){
+                $.post("/user/login",$("#log").serialize(),function(back){
+                    if(back.code==1){
+                        layer.msg('登录成功');
+                        redirect('/user/center');
+                    }else{
+                        layer.msg(back.code)
+                    }
+                })
+                return false;
+            })
+            $("[lay-filter=formreg]").on('click',function(){
+                $.post("/user/login",$("#reg").serialize(),function(back){
+                    console.log(back)
+                    if(back.code==1){
+                        layer.msg('注册成功');
+                        redirect('/user/center');
+                    }else{
+                        layer.msg(back.code)
+                    }
+                })
+                return false;
+            })
+        });
+    </script>
+<include file="base/foot"/>
+
