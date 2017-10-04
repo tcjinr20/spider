@@ -2,6 +2,9 @@
 <block name="body">
     <fieldset class="layui-elem-field">
         <legend>{$task.name}</legend>
+        <div class="layui-btn-group">
+            <a class="layui-btn layui-btn layui-btn-mini" href="/user/putToCvs?id={$task.id}" >下载cvs</a>
+        </div>
         <div class="layui-field-box">
             <div class="layui-row">
                 <table class="layui-table" lay-data="{height: '200', url:'/ajax/alevel/id/{$task.id}',page:true}">

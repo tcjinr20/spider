@@ -95,10 +95,9 @@ class AjaxController extends Controller
         $param = I('param');
         $level=$param['level'];
         $taskid=$param['taskid'];
-        $P['scripts']=$param['script'];
-        $P['scripttype']=$param['scripttype'];
+        $P['scripts']=json_encode($param['script']);
         if(M("TaskLevel")->where('taskid='.$taskid.' and level='.$level)->select()){
-            M("TaskLevel")->where('taskid='.$taskid.' and level='.$level)->update($P);
+            $b =M("TaskLevel")->where('taskid='.$taskid.' and level='.$level)->save($P);
         }else{
             $P['taskid']=$taskid;
             $P['level']=$level;

@@ -49,16 +49,14 @@ function checkresult(){
 
     if(ele.getAttribute('staus')==1){
       var con = JSON.parse(ele.textContent);
-      var obj = {};
-      obj['value']=con;
-      obj['key']=bdat;
+      con['key']=bdat;
       browser.storage.local.get().then(function(obje){
         var po = [];
         if(obje['packval']){
           po = obje['packval'];
         }
-        po.push(obj);
-
+        po.push(con);
+        console.log(po);
         browser.storage.local.set({'packval':po});
         ele.setAttribute('staus',0)
       });

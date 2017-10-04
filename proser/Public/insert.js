@@ -41,7 +41,7 @@
             po['index']=indexs;
             po['class']=self.act.classlist;
             spTool.__open = 0;
-            $("#spresult").text(JSON.stringify(indexs)).attr('staus',1);
+            $("#spresult").text(JSON.stringify(po)).attr('staus',1);
             layer.close(layer.index);
         }else{
             $("#spinfo").text("没有抓取");

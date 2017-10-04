@@ -98,9 +98,9 @@ class TaskModel extends Model
 
     public function getAllTask(){
         $task = $this->field('id,name')->select();
-//        foreach($task as &$v){
-//            $v['level']=M('TaskLevel')->where('taskid='.$v['id'])->field('level')->select();
-//        }
+        foreach($task as &$v){
+            $v['level']=M('TaskLevel')->where('taskid='.$v['id'])->field('level')->select();
+        }
         return $task;
     }
 

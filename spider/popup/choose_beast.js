@@ -2,6 +2,7 @@ layui.use(['form','jquery'],function(){
   var $= layui.jquery;
   var bg = browser.extension.getBackgroundPage();
   var itemnum = 0;
+  var alldata=null;
   document.addEventListener("click", function(e){
     var cls = e.target.classList;
     if(cls.contains("begin")){
@@ -11,11 +12,11 @@ layui.use(['form','jquery'],function(){
       var arr = e.target.id.split("_");
       var key = document.querySelector(".k_"+arr[1]).value;
       if(key.length==0){
-        document.querySelector(".error").innerHTML="»±…Ÿkey";
+        document.querySelector(".error").innerHTML="Áº∫Â∞ëkey";
         return
       }
       var tab = bg.getTab();
-      browser.tabs.sendMessage(tab.id, {type:"pack",data:[key,arr[1]]});
+      browser.tabs.sendMessage(tab.id, {type:"pack",data:key});
     }else if(cls.contains("setting")){
       bg.openTab($('#urlopt').val());
     }else if(cls.contains('add')){
@@ -48,7 +49,6 @@ layui.use(['form','jquery'],function(){
           p['level'] = $('#levelopt').val();
           p['script']=arr;
           p['taskid']=$("#list").val();
-          p['scripttype']=arr['type'];
           bg.sendSer(p);
         }
       });
@@ -78,16 +78,44 @@ layui.use(['form','jquery'],function(){
     bg.benginfrompanel(tid,deplay);
   }
 
+  function changeSelect(tar){
+    var p= tar['value'];
+    $('#levelopt').html('');
+    var le=0;
+    for(var i=0;i<alldata.length;i++){
+      if(alldata[i].id==p){
+        for(var j=0;j<alldata[i]['level'].length;j++){
+          le=alldata[i].level[j]['level'];
+          $('#levelopt').append("<option value='"+alldata[i].level[j]['level']+"' >"+alldata[i].level[j]['level']+"</option>");
+        }
+      }
+    }
+    layui.form.render()
+  }
+
   function initdata(){
     $.getJSON(bg.getSer()+"/ajax/ajax_alltask",function(data){
       if(data && data.length){
         alldata=data;
         for(var i =0;i<data.length;i++){
-          $('#list').append("<option value='"+data[i].id+"'>"+data[i].name+"</option>");
+          if(data[i].level){
+            var le='';
+            for(var j=0;j<data[i].level.length;j++){
+              if(i==0){
+                $('#levelopt').append("<option value='"+data[i].level[j]['level']+"' >"+data[i].level[j]['level']+"</option>");
+              }
+              le+=","+data[i].level[j]['level'];
+            }
+          }
+
+          $('#list').append("<option value='"+data[i].id+"' opt='"+le+"'>"+data[i].name+"</option>");
         }
+        layui.form.on('select(task)',changeSelect);
         layui.form.render()
       }
     });
+
+
   }
   initdata();
 
@@ -95,7 +123,7 @@ layui.use(['form','jquery'],function(){
     if(obj['packval']){
       var arr =obj['packval'];
       for(var i=0;i<arr.length;i++){
-        addItem(arr[i]['key'][0],arr[i]['value']['class'],1);
+        addItem(arr[i]['key'],arr[i]['class'],1);
       }
     }
   });

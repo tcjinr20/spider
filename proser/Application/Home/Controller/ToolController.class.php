@@ -9,10 +9,9 @@
 namespace Home\Controller;
 use Think\Controller;
 
-class ToolController extends Controller
+class ToolController extends BaseController
 {
     public function download(){
         $this->display();
-
     }
 }

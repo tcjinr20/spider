@@ -33,7 +33,7 @@ browser.runtime.onMessage.addListener(handleMessage);
 
 function sendToSer(url,param){
     var fd = buildParam(param);
-    const requestURL = serhost+url+'?XDEBUG_SESSION_START=10681';
+    const requestURL = serhost+url+'?XDEBUG_SESSION_START=17021';
     const requestHeaders = new Headers();
     const driveRequest = new Request(requestURL, {
         method: "POST",
@@ -116,7 +116,9 @@ function getTab(){
 
 function sendSer(param){
     sendToSer("/ajax/Spscript",param,0).then(function(p){
-        console.log(p)
+        if(p.code==0){
+            browser.storage.local.clear();
+        }
     });
 }
 

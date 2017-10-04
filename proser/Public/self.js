@@ -27,3 +27,9 @@ function onpreview(){
         $('#pref').append("<div>"+urls.replace(/\*/g,i)+"</div>");
     }
 }
+
+function redirect(url){
+    setTimeout(function () {
+        location.href = url;
+    },1000)
+}

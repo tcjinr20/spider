@@ -17,4 +17,5 @@ return array(
     'DB_PWD' => 'iW2RvtuIgZ',
     'DB_PORT' => '3306',
     'DB_PREFIX' => 'sp_',
+    'DEFAULT_FILTER'=>'htmlspecialchars'
 );
