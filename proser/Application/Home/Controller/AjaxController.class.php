@@ -65,10 +65,12 @@ class AjaxController extends Controller
         $param = I("param",[]);
         $optionid =$param['optionid'];
         $taskid=$param['taskid'];
-        $list=$param['list'];
+        $list=$param['list']?$param['list']:'1';
+        if(empty($optionid)|| empty($taskid)){
+            $this->ajaxReturn(['code'=>1006]);
+        }
         if(IS_POST && $list){
-            D("Task")->backTask($optionid,$list);
-            $task = D("Task")->getNextLevel($taskid);
+            $task =D("Task")->backTask($optionid,$list)->getNextLevel($taskid);
             $task['code']=1;
             $this->ajaxReturn($task);
         }

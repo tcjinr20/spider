@@ -27,7 +27,7 @@
     "default_popup": "popup/choose_beast.html"
   },
   "background": {
-    "scripts": ["beasts/bg.js"]
+    "scripts": ["bgs/bg.js"]
   },
   "content_scripts": [
     {

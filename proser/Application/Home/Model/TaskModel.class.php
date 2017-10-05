@@ -13,7 +13,7 @@ use Think\Model;
 
 class TaskModel extends Model
 {
-    private function getopt($tid,$level,$staus=0){
+    private function getopt($tid,$level,$staus){
         $w['level']=$level;
         $w['taskid']=$tid;
         $w['staus']=$staus;
@@ -77,6 +77,7 @@ class TaskModel extends Model
         $d['updatetime'] = date("Y-m-d H:i:s",time());
         $d['staus'] =1;
         M("TaskOption")->where('id='.$optionid)->save($d);
+        return $this;
     }
 
     public function addTask($user,$name){

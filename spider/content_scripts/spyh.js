@@ -75,7 +75,9 @@ function insertBeast() {
 }
 
 function onUpdate(setting){
-  var sp = setting['scripts'];
+
+  if(!setting['serback'])return;
+  var sp = setting['serback']['scripts'];
   if(sp){
     try{
       var script=eval(sp);
@@ -94,7 +96,6 @@ function onUpdate(setting){
     for (var l = 0; l < script.length; l++) {
       var arr;
       //1 多条 2 一条 3 脚本
-      console.log(script[l]['type'])
       if(script[l]['type']==1){
         arr=doScriptByXpathMut(script[l]);
       }else if(script[l]['type']==3){
@@ -102,7 +103,6 @@ function onUpdate(setting){
       }else if(script[l]['type']==2){
         arr=doScriptByXpathOne(script[l]);
       }
-      console.log(arr)
       keys.push(script[l]['key'][0]);
       values[script[l]['key'][0]]=arr;
       if(arr.length>max)max=arr.length;
@@ -126,7 +126,6 @@ function onUpdate(setting){
       res=[1];
     }
   }
-
   var sending = browser.runtime.sendMessage({type:"ser", sendto: res});
   sending.then(function(message){
     //location.href=message.response;

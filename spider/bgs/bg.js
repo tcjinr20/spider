@@ -12,6 +12,7 @@ const serhost = 'http://basezhushou.cn';
 
 function handleMessage(request, sender, sendResponse){
     if(request.type=='ser'){
+        console.log(param['id'])
         serpack.push({list:request.sendto,taskid:param['taskid'],optionid:param['id']});
         sendByPack();
     }
@@ -31,7 +32,7 @@ function sendByPack(){
 browser.runtime.onMessage.addListener(handleMessage);
 function sendToSer(url,param){
     var fd = buildParam(param);
-    const requestURL = serhost+url+"?XDEBUG_SESSION_START=11072";
+    const requestURL = serhost+url+'?XDEBUG_SESSION_START=16742';
     const requestHeaders = new Headers();
     const driveRequest = new Request(requestURL, {
         method: "POST",
@@ -71,7 +72,7 @@ function buildParam(param){
 function getFrom(url,obj,cookie){
     sendToSer(url,obj).then(function(p){
         param=p;
-        browser.storage.local.set(param);
+        browser.storage.local.set({'serback':param});
         if(param.code==1 && param['url']){
             if(cookie){
                 browser.storage.local.set({'begin':new Date().getTime()})
@@ -92,6 +93,7 @@ function getHost(url){
 
 function benginfrompanel(taskid,lay){
     delay=lay?lay:2000;
+    //ClearMine();
     getFrom('/ajax/ajax_next',{'taskid':taskid},1);
 }
 
@@ -111,11 +113,11 @@ function sendSer(param){
 function openTab(url){
     if(curtab){
         browser.tabs.update(curtab.id,{url:url});
-        browser.tabs.sendMessage(curtab.id, {type:"run"});
+        //browser.tabs.sendMessage(curtab.id, {type:"run"});
     }else{
         browser.tabs.create({url:url}).then(function(tab){
             curtab=tab;
-            browser.tabs.sendMessage(curtab.id, {type:"run"});
+            //browser.tabs.sendMessage(curtab.id, {type:"run"});
         });
     }
 }
@@ -156,6 +158,8 @@ function ClearMine(){
 
     }
 }
+
+
 
 
 
