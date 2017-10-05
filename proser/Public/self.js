@@ -5,16 +5,14 @@
 var level = 0;
 function addNexttask(){
 level++;
-    var item ='<div class="panel panel-default">\
-    <input type="hidden" value="#1" name="task[#1][level]">\
-    <div class="panel-heading">#1级执行脚本</div>\
-    <div class="panel-body">\
-    <label class="col-sm-2">脚本</label>\
-    <div class="col-sm-10"><textarea name="task[#1][scripts]" class="form-control" rows="3"></textarea></div>\
-    <label class="col-sm-2">属性</label>\
-    <div class="col-sm-10"><input type="text" class="form-control" name="task[#1][attr]"></div>\
-    </div>\
-    </div>';
+    var item ='<div class="layui-form-item">\
+        <label class="layui-form-label">#1级js脚本</label>\
+        <input type="hidden" value="#1" name="task[#1][level]">\
+        <div class="layui-input-block">\
+        <textarea name="task[#1][scripts]" placeholder="请输入内容" class="layui-textarea"></textarea>\
+        </div>\
+        <label class="layui-form-label">#1级关键属性</label><div class="layui-form-mid layui-word-aux"><input type="text" placeholder="属性" name="task[#1][attr]" autocomplete="off" class="layui-input"></div>\
+    </div>'
     var lk=  item.replace(/#1/g,level);
 $("#tasklevel").append(lk);
 }

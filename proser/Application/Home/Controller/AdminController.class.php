@@ -22,12 +22,20 @@ class AdminController extends Controller
             if(is_login()){
 
             }else{
-                $this->redirect("/user/login");
+                if(IS_AJAX){
+                    $this->ajaxReturn(['code'=>1005]);
+                }else{
+                    $this->redirect("/user/login");
+                }
             }
         }
     }
 
     public function getUser(){
         return $_SESSION['user'];
+    }
+
+    public function getUserID(){
+        return $_SESSION['user']['id'];
     }
 }

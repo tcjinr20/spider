@@ -17,7 +17,10 @@ class AjaxController extends Controller
         header('Access-Control-Allow-Origin:*');
         header('Access-Control-Allow-Methods:POST');
         header('Access-Control-Allow-Headers:x-requested-with,content-type');
-        $this->title="互联网web数据处理";
+    }
+
+    public function index(){
+        echo 'empty';
     }
 
     public function Aindex(){
@@ -32,10 +35,10 @@ class AjaxController extends Controller
         $id = I("id",'','intval');
         $res = array();
         if(empty($id)){
-            $res['code'] =101;
+            $res['code'] =1006;
             $res['msg']='参数错误';
         }else{
-            $res['code'] =0;
+            $res['code'] =1;
             $res['msg']='';
             $res['count']=M("TaskLevel")->where("taskid=$id")->count();
             $res['data']=M("TaskLevel")->where("taskid=$id")->select();
@@ -47,10 +50,10 @@ class AjaxController extends Controller
         $id = I("id",'','intval');
         $res = array();
         if(empty($id)){
-            $res['code'] =101;
+            $res['code'] =1006;
             $res['msg']='参数错误';
         }else{
-            $res['code'] =0;
+            $res['code'] =1;
             $res['msg']='';
             $res['count']=M("TaskOption")->where("taskid=$id")->count();
             $res['data']=M("TaskOption")->where("taskid=$id")->limit(10)->select();
@@ -66,8 +69,8 @@ class AjaxController extends Controller
         if(IS_POST && $list){
             D("Task")->backTask($optionid,$list);
             $task = D("Task")->getNextLevel($taskid);
-            $task['staus']=1;
-            exit(json_encode($task));
+            $task['code']=1;
+            $this->ajaxReturn($task);
         }
     }
 
@@ -75,20 +78,20 @@ class AjaxController extends Controller
         $param = I('param',[]);
         $taskid =$param['taskid'];
         if(empty($taskid)){
-            exit(json_encode(array('staus'=>0,"message"=>'wrong')));
+            $this->ajaxReturn(array('code'=>1007));
         }
         $task = D("Task")->getNextLevel($taskid);
         if(empty($task)){
-            exit(json_encode(array('staus'=>0,'message'=>"no task")));
+            $this->ajaxReturn(array('code'=>1008));
         }else{
-            $task['staus']=1;
-            exit(json_encode($task));
+            $task['code']=1;
+            $this->ajaxReturn($task);
         }
     }
 
     public function ajax_alltask(){
         $d = D("Task")->getAllTask();
-        exit(json_encode($d));
+        $this->ajaxReturn($d);
     }
 
     public function Spscript(){

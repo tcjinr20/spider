@@ -11,7 +11,7 @@ namespace Home\Controller;
 
 use Think\Controller;
 
-class TaskController extends BaseController
+class TaskController extends AdminController
 {
     public function detail(){
         $id = I("id");
@@ -32,10 +32,9 @@ class TaskController extends BaseController
             $max = I('maxpage');
             $min = I("minpage");
             if(empty($taskname)||empty($urls)||empty($max)||$min>$max){
-                exit("<script>alert('参数错误');history.back()</script>");
-                return;
+                $this->ajaxReturn(['code'=>1004]);
             }
-            $taskid = D('Task')->addTask($taskname);
+            $taskid = D('Task')->addTask($this->getUserID(),$taskname);
             $options =[];
             for($i=$min;$i<$max;$i++){
                 $tl['url']=preg_replace('/\*/',$i,$urls);
@@ -49,17 +48,16 @@ class TaskController extends BaseController
             if(!empty($tasklev)){
                 $ls =[];
                 foreach($tasklev as $k=>$t){
-                    if(!empty($t['scripts'])){
-                        $int['attrs'] = $t['attr']?$t['attr']:'';
-                        $int['scripts'] =htmlspecialchars(htmlentities($t['scripts']));
-                        $int['taskid']=$taskid;
-                        $int['level']=$t['level'];
-                        $ls[]=$int;
-                    }
+                    $int['attrs'] = $t['attr']?$t['attr']:'';
+                    $int['scripts'] =$t['scripts']?$t['scripts']:"";
+                    $int['taskid']=$taskid;
+                    $int['level']=$t['level'];
+                    $ls[]=$int;
+
                 }
                 D('Task')->addLevels($ls);
             }
-            redirect(U('index/pubTask'));
+            $this->ajaxReturn(['code'=>1]);
         }
         $this->display();
     }

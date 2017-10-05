@@ -17,7 +17,7 @@ class TaskModel extends Model
         $w['level']=$level;
         $w['taskid']=$tid;
         $w['staus']=$staus;
-        $option = M("TaskOption")->where($w)->order("id desc")->limit(1)->find();
+        $option = M("TaskOption")->where($w)->order("id")->limit(1)->find();
         return $option;
     }
 
@@ -29,7 +29,7 @@ class TaskModel extends Model
     }
 
     public function getNextLevel($tid){
-        $level=M('TaskLevel')->where("taskid=$tid and staus=0")->order('id desc')->limit(1)->find();
+        $level=M('TaskLevel')->where("taskid=$tid and staus=0")->order('level')->limit(1)->find();
         if(empty($level)){
             return false;
         }
@@ -42,7 +42,7 @@ class TaskModel extends Model
                 $put = [];
                 foreach($con as $c){
                     if(!empty($level['attrs'])){
-                        $w['url']=$c[$level['attrs']];
+                        $w['url']=$c->$level['attrs'];
                     }else{
                         $w['url']=$c;
                     }
@@ -58,16 +58,12 @@ class TaskModel extends Model
 
         $option = $this->getopt($tid,$level['level'],0);
         if(empty($option)){
+            M('TaskLevel')->where("id=".$level['id'])->save(array('staus'=>1));
             $opp = $this->getNextLevel($tid);
-            if($opp)return$opp;
-            else{
-                M('TaskLevel')->where("id=".$level['id'])->save(array('staus'=>1));
-                $opp = $this->getNextLevel($tid);
-                if($opp){
-                    return $opp;
-                }
-                return false;
+            if($opp){
+                return $opp;
             }
+            return false;
         }
         $ret['id']=$option['id'];
         $ret['taskid'] = $tid;
@@ -83,8 +79,9 @@ class TaskModel extends Model
         M("TaskOption")->where('id='.$optionid)->save($d);
     }
 
-    public function addTask($name){
+    public function addTask($user,$name){
         $d['name']=$name;
+        $d['user']=$user;
         return $this->add($d);
     }
 

@@ -2,3 +2,7 @@
     max-height: 100px;
     overflow-x: hidden;
 }
+
+textarea[name='scripts']{
+    background-color: #3F3F3F;
+}

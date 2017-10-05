@@ -1,6 +1,6 @@
 <extend name="base/layout" />
 <block name="body">
-    <form class="layui-form">
+    <form class="layui-form" lay-filter="formapply">
         <div class="layui-form-item">
             <label class="layui-form-label">任务标识</label>
             <div class="layui-input-block">
@@ -22,6 +22,9 @@
             <div class="layui-input-inline" style="width: 100px;">
                 <input type="text" placeholder="maxpage" name="maxpage" lay-verify="required" autocomplete="off" class="layui-input">
             </div>
+            <div class="layui-input-inline">
+                <input type="button" onclick="onpreview()" class="layui-btn layui-btn-mini layui-btn-primary" value="生成预览">
+            </div>
         </div>
         <div class="layui-form-item layui-form-text">
             <label class="layui-form-label">任务描述</label>
@@ -29,15 +32,19 @@
                 <textarea name="desc" placeholder="请输入内容" class="layui-textarea"></textarea>
             </div>
         </div>
-        <div class="layui-form-item">
-            <div class="layui-input-block">
-                <input type="button" onclick="onpreview()" class="layui-btn layui-btn-mini layui-btn-primary" lay-filter="formDemo" value="生成预览">
-                <input type="button" class="layui-btn layui-btn-mini layui-btn-primary" value="添加脚本">
+        <div id="tasklevel">
+            <div class="layui-form-item layui-form-text">
+                <label class="layui-form-label"></label>
+                <div class="layui-input-block">
+                    <input type="button" onclick="addNexttask()" class="layui-btn layui-btn-mini layui-btn-primary" value="添加脚本">
+                </div>
+                <label class="layui-form-label"></label><div class="layui-form-mid layui-word-aux">web只支持脚本，需要更简易的方式，请在插件中使用</div>
             </div>
         </div>
+
         <div class="layui-form-item">
             <div class="layui-input-block">
-                <button class="layui-btn" lay-submit lay-filter="formapply">立即提交</button>
+                <button class="layui-btn" lay-submit >立即提交</button>
                 <button type="reset" class="layui-btn layui-btn-primary">重置</button>
             </div>
         </div>
@@ -45,15 +52,19 @@
     <div id="pref"></div>
 
 </block>
-<block name="scriptsfoot">
+<block name="footscript">
     <script>
-        //Demo
-        layui.use('form', function(){
+        layui.use(['form','layer'], function(){
             var form = layui.form;
-            //监听提交
             form.on('submit(formapply)', function(data){
-                console.log(data);
-                layer.msg(JSON.stringify(data.field));
+                $.post('/task/pubTask',$(data.elem).serialize(),function(back){
+                    if(back.code==1){
+                        layer.msg('添加成功');
+                        redirect('/user/center');
+                    }else{
+                        layer.msg(back.code);
+                    }
+                })
                 return false;
             });
         });

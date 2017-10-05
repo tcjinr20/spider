@@ -7,15 +7,15 @@ var curtab;
 var delay = 2000;//刷新频率
 var serpack=[];//发送服务端的数据包
 var inttime = -1;
-const serhost = 'http://spider.com';
+//const serhost = 'http://spider.com';
+const serhost = 'http://basezhushou.cn';
 
 function handleMessage(request, sender, sendResponse){
-    if(request.sendto){
+    if(request.type=='ser'){
         serpack.push({list:request.sendto,taskid:param['taskid'],optionid:param['id']});
         sendByPack();
     }
 }
-var endt=0;
 function sendByPack(){
     if(inttime!=-1)return;
     inttime = setInterval(function(){
@@ -25,15 +25,13 @@ function sendByPack(){
             clearInterval(inttime);
             inttime=-1;
         }
-    },delay);
+    },delay*1000);
 }
 
 browser.runtime.onMessage.addListener(handleMessage);
-
-
 function sendToSer(url,param){
     var fd = buildParam(param);
-    const requestURL = serhost+url+'?XDEBUG_SESSION_START=17021';
+    const requestURL = serhost+url+"?XDEBUG_SESSION_START=11072";
     const requestHeaders = new Headers();
     const driveRequest = new Request(requestURL, {
         method: "POST",
@@ -44,6 +42,7 @@ function sendToSer(url,param){
             if (response.status === 200) {
             return response.json();
             } else {
+                openTab('content_scripts/empty.html');
                 throw response.status;
             }
     });
@@ -71,29 +70,15 @@ function buildParam(param){
 
 function getFrom(url,obj,cookie){
     sendToSer(url,obj).then(function(p){
-
         param=p;
-        if(param['url']){
-            param['url']=param['url'].replace('supply','contact');
-        }
         browser.storage.local.set(param);
-        if(param.staus==1 && param['url']){
-            openTab(param['url']);
+        if(param.code==1 && param['url']){
             if(cookie){
-                if(param['url']){
-
-                    browser.cookies.set({
-                        url: getHost(param['url']),
-                        name: "begin",
-                        value: "1"
-                    })
-                    browser.cookies.set({
-                        url: param['url'],
-                        name: "begin",
-                        value: "1"
-                    })
-                }
+                browser.storage.local.set({'begin':new Date().getTime()})
             }
+            openTab(param['url']);
+        }else{
+            console.log(param)
         }
     });
 }
@@ -126,9 +111,11 @@ function sendSer(param){
 function openTab(url){
     if(curtab){
         browser.tabs.update(curtab.id,{url:url});
+        browser.tabs.sendMessage(curtab.id, {type:"run"});
     }else{
         browser.tabs.create({url:url}).then(function(tab){
             curtab=tab;
+            browser.tabs.sendMessage(curtab.id, {type:"run"});
         });
     }
 }

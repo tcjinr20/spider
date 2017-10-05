@@ -3,7 +3,7 @@
  */
 (function(win){
     function spTool(){};
-	var ser ="http://basezhushou.cn";
+	var ser ="http://spider.com";
     spTool.__update=0;
     spTool.__open=0;
     var self = null;
@@ -40,6 +40,8 @@
             po['type']=type;
             po['index']=indexs;
             po['class']=self.act.classlist;
+            po['attr']=$('#spattr').val();
+            po['sprex'] =$("#spvalue").val();
             spTool.__open = 0;
             $("#spresult").text(JSON.stringify(po)).attr('staus',1);
             layer.close(layer.index);
@@ -47,6 +49,14 @@
             $("#spinfo").text("没有抓取");
         }
         return false;
+    }
+    spTool.prototype.closeInscript = function() {
+        var po= {};
+        po['type']=3;
+        po['script']=$('.layui-code').text();
+        spTool.__open = 0;
+        $("#spresult").text(JSON.stringify(po)).attr('staus',1);
+        layer.close(layer.index);
     }
 
     spTool.prototype.init=function (){
@@ -57,6 +67,12 @@
             <input type="text" placeholder="属性名称" id="spattr" autocomplete="off" value="innerHTML" class="layui-input">\
             </div>\
             <div class="layui-form-mid layui-word-aux">默认innerHTML</div>\
+        </div>\
+        <div class="layui-form-item">\
+            <label class="layui-form-label">填充取值</label>\
+            <div class="layui-input-block">\
+            <input type="text" placeholder="#z代表取值" id="spvalue" autocomplete="off" value="" class="layui-input">\
+            </div>\
         </div>\
         <div class="layui-form-item">\
            <label class="layui-form-label">循环</label>\
@@ -80,7 +96,9 @@
         var item2 = '<textarea placeholder="" rows="7" class="layui-textarea" oninput="changeText(this)"></textarea>\
         <pre class="layui-code">\
         </pre>\
-        <button class="layui-btn" onclick="">保存</button>';
+        <div id="sperror">12</div>\
+        <button class="layui-btn" onclick="sptool.closeInscript()">保存</button>\
+        <button class="layui-btn" onclick="testJS()">测试</button>';
         var div =document.querySelector("#spresult");
         if(!div){
             div=document.createElement("div");
@@ -123,6 +141,15 @@
         spTool.__update--;
         if(spTool.__update<0)spTool.__update=0;
         self.act.update(spTool.__update)
+    };
+    spTool.prototype.execute = function(js){
+        try{
+            eval(js);
+            var list =getSpiderData();
+            $("#sperror").html(list);
+        }catch(e){
+            $("#sperror").html(e.message);
+        }
     }
 
 
@@ -147,7 +174,7 @@
 
             var att = $('#spattr').val();
             if(att.length==0){
-                $('spattr').val('textContent');
+                $('#spattr').val('textContent');
                 att ='textContent';
             }
             if(!pre.hasAttributes(att)){
@@ -158,13 +185,20 @@
                 selfm.classlist = new IterClass(level).getTar(pre);
                 var lists = document.querySelectorAll(selfm.classlist);
             }else{
-                var path= new IterClass(level).readXPath(pre);
-                var lists = document.body.selectNodes(path);
+                selfm.classlist= new IterClass(level).readXPath(pre);
+                var lists = document.body.selectNodes(selfm.classlist);
             }
-
+            console.log(selfm.classlist)
             $('#spinfo').html('');
             for(var i =0;i<lists.length;i++){
-                $('#spinfo').append("<p style='cursor: hand' onclick='changeStaus(this)' staus='1'>"+i+":"+lists[i][att]+"</p>");
+                var spval=$("#spvalue").val();
+                var attr = '';
+                if(spval){
+                    attr = spval.replace(/#z/g,lists[i][att]);
+                }else{
+                    attr = lists[i][att]
+                }
+                $('#spinfo').append("<p style='cursor: hand' onclick='changeStaus(this)' staus='1'>"+i+":"+attr+"</p>");
                 if(i>30){
                     $('#spinfo').append(lists.length+":……");
                     return;
@@ -307,15 +341,20 @@ function changeStaus(tar){
 }
 
 function changeText(tar){
-    $("pre.layui-code").html(tar.value);
+    var js = "function getSpiderData(){\n";
+    js+=tar.value;
+    js+="\n}";
+    $("pre.layui-code").html(js);
+}
+
+function testJS(){
+    sptool.execute($("pre.layui-code").html())
 }
 
 function checkstuas(){
     var div=document.getElementById('sptoolstaus');
     if(div){
-        console.log(div.getAttribute('staus'));
         if(div.getAttribute('staus')==1){
-            console.log('open')
             sptool.setPanel();
             div.setAttribute('staus',0);
         }

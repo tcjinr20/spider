@@ -7,33 +7,44 @@ layui.use(['form','jquery'],function(){
     var cls = e.target.classList;
     if(cls.contains("begin")){
       begin();
+      var task = $('#list').val();
+      var lel = $("#levelopt").val();
+      var delay=$('#opt').val();
+      browser.storage.local.set({'packkey':[task,lel,delay]});
       return false;
     }else if(cls.contains("find")){
       var arr = e.target.id.split("_");
-      var key = document.querySelector(".k_"+arr[1]).value;
+      var key = $(".k_"+arr[1]).val();
+
+      var task = $('#list').val();
+      var lel = $("#levelopt").val();
+      var delay=$('#opt').val();
+      var testurl =$("#urlopt").val();
       if(key.length==0){
         document.querySelector(".error").innerHTML="缺少key";
         return
       }
+      browser.storage.local.set({'packkey':[task,lel,delay,testurl]});
       var tab = bg.getTab();
-      browser.tabs.sendMessage(tab.id, {type:"pack",data:key});
+      browser.tabs.sendMessage(tab.id, {type:"pack",data:[key]});
+
     }else if(cls.contains("setting")){
       bg.openTab($('#urlopt').val());
     }else if(cls.contains('add')){
       addItem();
     }else if(cls.contains('clear')){
       browser.storage.local.clear();
+      //browser.cookies.remove();
     }else if(cls.contains('del')){
       var trs = e.target.id.split("_");
-      var kkey = document.querySelector(".k_"+trs[1]).value;
+      var kkey = $(".k_"+trs[1]).val();
       browser.storage.local.get().then(function(obj){
         if(obj['packval']){
           var arr =obj['packval'];
           for(var i=0;i<arr.length;i++){
             if(arr[i]['key'][0]==kkey){
               arr.splice(i,1);
-              var no = document.getElementById('p_'+trs[1]);
-              no.parentNode.removeChild(no);
+              $('#p_'+trs[1]).remove();
               browser.storage.local.set({'packval':arr});
               return
             }
@@ -41,13 +52,12 @@ layui.use(['form','jquery'],function(){
         }
       });
     }else if(cls.contains('save')){
-      //browser.tabs.sendMessage(tab.id, {type:"pack",data:[key,arr[1]]});
       browser.storage.local.get().then(function(obj){
         if(obj['packval']){
-          var arr =obj['packval'];
+          var val =obj['packval'];
           var p = {};
           p['level'] = $('#levelopt').val();
-          p['script']=arr;
+          p['script']=val;
           p['taskid']=$("#list").val();
           bg.sendSer(p);
         }
@@ -99,34 +109,38 @@ layui.use(['form','jquery'],function(){
         alldata=data;
         for(var i =0;i<data.length;i++){
           if(data[i].level){
-            var le='';
             for(var j=0;j<data[i].level.length;j++){
               if(i==0){
-                $('#levelopt').append("<option value='"+data[i].level[j]['level']+"' >"+data[i].level[j]['level']+"</option>");
+                $('#levelopt').append("<option value='"+data[i].level[j]['level']+"'>"+data[i].level[j]['level']+"</option>");
               }
-              le+=","+data[i].level[j]['level'];
             }
           }
-
-          $('#list').append("<option value='"+data[i].id+"' opt='"+le+"'>"+data[i].name+"</option>");
+          $('#list').append("<option value='"+data[i].id+"'>"+data[i].name+"</option>");
         }
         layui.form.on('select(task)',changeSelect);
-        layui.form.render()
+        browser.storage.local.get().then(function(obj){
+          if(obj['packval']){
+            var arr =obj['packval'];
+            console.log(arr)
+            for(var i=0;i<arr.length;i++){
+              addItem(arr[i]['key'],arr[i]['class'],1);
+            }
+          }
+          if(obj['packkey']){
+            var pp = obj['packkey'];
+            $('#list').val(pp[0]);
+            $("#levelopt").val(pp[1]);
+            $('#opt').val(pp[2]);
+            $("#urlopt").val(pp[3]);
+          }
+          layui.form.render();
+        });
       }
     });
-
-
   }
   initdata();
 
-  browser.storage.local.get().then(function(obj){
-    if(obj['packval']){
-      var arr =obj['packval'];
-      for(var i=0;i<arr.length;i++){
-        addItem(arr[i]['key'],arr[i]['class'],1);
-      }
-    }
-  });
+
 });
 
 

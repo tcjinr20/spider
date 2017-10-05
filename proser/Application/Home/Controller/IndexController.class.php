@@ -27,10 +27,6 @@ class IndexController extends BaseController {
         $this->display();
     }
 
-
-
-
-
     public function test(){
         $id = I("id",0);
         $this->id=$id;

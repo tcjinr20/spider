@@ -53,8 +53,6 @@ class UserController extends AdminController
     }
 
     public function putToCvs(){
-        var_dump($this->getUser());
-        return;
         $task = I("id",0);
         if(empty($task)){
             exit("²ÎÊı´íÎó");
