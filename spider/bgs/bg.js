@@ -1,7 +1,7 @@
 /**
  * Created by Administrator on 2017/9/15 0015.
  */
-
+    
 var param = '';
 var curtab;
 var delay = 2000;//刷新频率
@@ -100,7 +100,7 @@ function benginfrompanel(taskid,lay,proxy){
     }
     getFrom('/ajax/ajax_next',{'taskid':taskid},1);
 }
-console.log(4554)
+
 function getTab(){
     return curtab;
 }

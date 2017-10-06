@@ -171,10 +171,19 @@ layui.use(['form','jquery'],function(){
       }
     });
   }
+
+  function getWin(){
+    bg.getTab()
+    var tab = bg.getActiveTab().then(function(tabs){
+      console.log(tabs[0].windowId)
+    })
+    //console.log(browser.windows.WINDOW_ID_CURRENT);
+  }
+  getWin();
   initdata();
 
-
 });
+
 
 
 
