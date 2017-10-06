@@ -1,8 +1,30 @@
 layui.use(['form','jquery'],function(){
   var $= layui.jquery;
+
   var bg = browser.extension.getBackgroundPage();
   var itemnum = 0;
   var alldata=null;
+
+  $(".getproxy").click(function(){
+    var url = bg.getSer()+"/ajax/proxyip";
+    $.post(url,{},function(ba){
+      if(ba.length>0){
+        $('#proxy').val(ba[0]['ip']);
+        browser.storage.local.set({'packproxy':ba[0]['ip']});
+      }
+    })
+  });
+
+  layui.form.on("checkbox(mine)",function(b){
+    var arr = [];
+    $('input[type=checkbox]').each(function(i,e){
+      if(e.checked){
+        arr.push(e.value)
+      }
+    });
+    browser.storage.local.set({'packmine':arr});
+  });
+
   document.addEventListener("click", function(e){
     var cls = e.target.classList;
     if(cls.contains("begin")){
@@ -85,7 +107,9 @@ layui.use(['form','jquery'],function(){
   function begin(){
     var tid = $('#list').val();
     var deplay =parseInt($('#opt').val());
-    bg.benginfrompanel(tid,deplay);
+    var proxy = $('#proxy').val();
+
+    bg.benginfrompanel(tid,deplay,proxy);
   }
 
   function changeSelect(tar){
@@ -132,6 +156,15 @@ layui.use(['form','jquery'],function(){
             $("#levelopt").val(pp[1]);
             $('#opt').val(pp[2]);
             $("#urlopt").val(pp[3]);
+          }
+          if(obj['packproxy']){
+            $('#proxy').val(obj['packproxy']);
+          }
+          if(obj['packmine']){
+            var arl = obj['packmine'];
+            for(var i =0;i<arl.length;i++){
+              $('input[value='+arl[i]+']')[0].checked=true;
+            }
           }
           layui.form.render();
         });

@@ -21,10 +21,24 @@
     </div>
   </div>
   <div class="layui-form-item">
+    <label class="layui-form-label">代理IP</label>
+    <div class="layui-input-inline">
+      <input type="text" class="layui-input" id="proxy" value="20" title="代理" placeholder="代理IP">
+      <button class="layui-btn layui-btn-mini layui-btn-primary getproxy">获取</button>
+    </div>
+  </div>
+  <div class="layui-form-item">
+    <label class="layui-form-label" title="提高运行速度">过滤</label>
+    <div class="layui-input-block" >
+      <input type="checkbox" lay-filter="mine" value="script"  title="js">
+      <input type="checkbox" lay-filter="mine" value="image" title="图片">
+      <input type="checkbox" lay-filter="mine" value="stylesheet" title="css">
+    </div>
+  </div>
+  <div class="layui-form-item">
     <div class="layui-input-inline">
       <button class="layui-btn layui-btn-small layui-btn-primary begin">运行</button>
     </div>
-
   </div>
   <div class="layui-form-item">
     <label class="layui-form-label">测试地址</label>

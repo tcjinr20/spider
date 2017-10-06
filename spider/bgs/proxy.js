@@ -1,23 +1,26 @@
+(function(tool){
+    const proxyScriptURL = "bgs/proxy-script.js";
+    var proxyinit = false;
+    var proxyip = '';
+    browser.proxy.registerProxyScript(proxyScriptURL);
+    browser.proxy.onProxyError.addListener(function(error){
+        console.log("Proxy error:"+error.message);
+    });
 
-const proxyScriptURL = "bgs/proxy-script.js";
-var proxyinit = false;
-var proxyip = '';
-browser.proxy.registerProxyScript(proxyScriptURL);
-browser.proxy.onProxyError.addListener(function(error){
-  console.log("Proxy error:"+error.message);
-});
+    tool.setProxyIP=function (ip) {
+        proxyip= ip;
+        if(proxyinit){
+            proxyinit= true;
+            browser.runtime.sendMessage(ip, {toProxyScript: true});
+        }
+    }
+    function handleMessage(message, sender) {
+        if (sender.url !=  browser.extension.getURL(proxyScriptURL)) {
+            return;
+        }
+    }
 
-function setProxyIP(ip) {
-	proxyip= ip;
-	if(proxyinit){
-      proxyinit= true;
-      browser.runtime.sendMessage(ip, {toProxyScript: true});
-	}
-}
-function handleMessage(message, sender) {
-  if (sender.url !=  browser.extension.getURL(proxyScriptURL)) {
-    return;
-  }
-}
+    browser.runtime.onMessage.addListener(handleMessage);
+})
 
-browser.runtime.onMessage.addListener(handleMessage);
+

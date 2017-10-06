@@ -96,6 +96,10 @@ class AjaxController extends Controller
         $this->ajaxReturn($d);
     }
 
+    public function proxyip(){
+        $this->ajaxReturn(M("Ips")->order('rand()')->limit(1)->select());
+    }
+
     public function Spscript(){
         $param = I('param');
         $level=$param['level'];

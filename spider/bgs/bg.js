@@ -91,12 +91,16 @@ function getHost(url){
     return pro+"www."+arr[arr.length-2]+"."+arr[arr.length-1];
 }
 
-function benginfrompanel(taskid,lay){
+function benginfrompanel(taskid,lay,proxy){
     delay=lay?lay:2000;
-    //ClearMine();
+    ClearMine();
+    console.log(window)
+    if(proxy){
+        //setProxyIP(proxy);
+    }
     getFrom('/ajax/ajax_next',{'taskid':taskid},1);
 }
-
+console.log(4554)
 function getTab(){
     return curtab;
 }
@@ -144,19 +148,23 @@ getActiveTab().then(function(tabs){
 })
 
 function ClearMine(){
-    var self= this;
-    self.active = true;
-    browser.webRequest.onBeforeSendHeaders.addListener(rewriteUserAgentHeader,{urls: ["<all_urls>"]},["blocking", "requestHeaders"]);
-    browser.webRequest.onErrorOccurred.addListener(rewriteError,{urls: ["<all_urls>"]})
-    function rewriteUserAgentHeader(e){
-        if(!self.active)return;
-        if(['script','image','stylesheet'].indexOf(e.type)!=-1){
-            return {cancel: true};
-        }
-    }
-    function rewriteError(){
+    browser.storage.local.get().then(function(obj){
+        if(obj['packmine'] && obj['packmine'].length>0){
+            var self= this;
+            self.active = true;
+            browser.webRequest.onBeforeSendHeaders.addListener(rewriteUserAgentHeader,{urls: ["<all_urls>"]},["blocking", "requestHeaders"]);
+            browser.webRequest.onErrorOccurred.addListener(rewriteError,{urls: ["<all_urls>"]})
+            function rewriteUserAgentHeader(e){
+                if(!self.active)return;
+                if(obj['packmine'].indexOf(e.type)!=-1){
+                    return {cancel: true};
+                }
+            }
+            function rewriteError(){
 
-    }
+            }
+        }
+    })
 }
 
 
