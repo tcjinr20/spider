@@ -35,5 +35,5 @@
       "js": ["content_scripts/spyh.js"]
     }
   ],
-"content_security_policy": "script-src 'self' 'unsafe-eval' 'https://res.layui.com'; object-src 'self';"
+"content_security_policy": "script-src 'self' https://res.layui.com/; object-src 'self';"
 }
