@@ -1,0 +1,87 @@
+<extend name="base/layout" />
+<block name="body">
+    <form class="layui-form" >
+        <input hidden name="id" value="{$task.id}">
+        <div class="layui-form-item">
+            <label class="layui-form-label">任务标识</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" lay-verify="required" placeholder="label" autocomplete="off" class="layui-input" value="{$task.name}">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">任务描述</label>
+            <div class="layui-input-block">
+                <textarea name="desc" placeholder="请输入内容" class="layui-textarea" >{$task.desc}</textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formapply">修改</button>
+            </div>
+        </div>
+    </form>
+    <div class="layui-form">
+        <div class="layui-form-item">
+            <label class="layui-form-label">任务等级</label>
+            <div class="layui-input-block">
+                <div class="layui-collapse">
+                    <volist name="task.level" id="vo">
+                        <div class="layui-colla-item">
+                            <form class="layui-form" >
+                                <h2 class="layui-colla-title">{$key+1}级</h2>
+                                <div class="layui-colla-content">
+                                    <div class="layui-form-item">
+                                        <label class="layui-form-label">{$key+1}级js脚本</label>
+                                        <input type="hidden" value="{$key+1}" name="level">
+                                        <input type="hidden" value="{$task.id}" name="tasksid">
+                                        <div class="layui-input-block">
+                                            <textarea name="scripts" placeholder="请输入内容" class="layui-textarea">{$vo.scripts}</textarea>
+                                        </div>
+                                        <label class="layui-form-label">{$key+1}级关键属性</label>
+                                        <div class="layui-form-mid layui-word-aux">
+                                            <input type="text" placeholder="属性" name="attrs" autocomplete="off" class="layui-input" value="{$vo.attrs}">
+                                        </div>
+                                    </div>
+                                    <div class="layui-form-item">
+                                        <div class="layui-input-block">
+                                            <button class="layui-btn" lay-submit lay-filter="formlevel">修改</button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </volist>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        //注意：折叠面板 依赖 element 模块，否则无法进行功能性操作
+        layui.use(['jquery','form','layer'], function(){
+            var form = layui.form;
+            var $=layui.jquery;
+            form.on("submit(formapply)",function(elem){
+                elem.field['act']='task';
+                $.post("/ajax/mendTask",elem.field,function(back){
+                    if(back.code==1){
+                        layui.layer.msg("完成修改")
+                    }else{
+                        layui.layer.msg("错误码："+back.code)
+                    }
+                });
+                return false;
+            })
+            form.on("submit(formlevel)",function(elem){
+                elem.field['act']='level';
+                $.post("/ajax/mendTask",elem.field,function(back){
+                    if(back.code==1){
+                        layui.layer.msg("完成修改")
+                    }else{
+                        layui.layer.msg("错误码："+back.code)
+                    }
+                });
+                return false;
+            })
+        });
+    </script>
+</block>

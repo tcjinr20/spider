@@ -3,7 +3,7 @@
  */
 (function(win){
     function spTool(){};
-	var ser ="http://spider.com";
+	var ser ="http://basezhushou.cn";
     spTool.__update=0;
     spTool.__open=0;
     var self = null;
@@ -81,18 +81,19 @@
             </div>\
         </div>\
         <div class="layui-form-item">\
-        <label class="layui-form-label">提示</label>\
-        <div class="layui-input-inline">\
-        <div id="spinfo"></div>\
-        </div>\
-        </div>\
-        <div class="layui-form-item">\
             <div class="layui-input-block">\
             <button class="layui-btn" onclick="return sptool.close()">确定</button>\
             <button class="layui-btn" onclick="sptool.uplevel()">升品</button>\
             <button class="layui-btn" onclick="sptool.downlevel()">降品</button>\
             </div>\
-        </div></div>'
+        </div>\
+        <div class="layui-form-item">\
+        <label class="layui-form-label">提示</label>\
+        <div class="layui-input-inline">\
+        <div id="spinfo"></div>\
+        </div>\
+        </div>\
+        </div>'
         var item2 = '<textarea placeholder="" rows="7" class="layui-textarea" oninput="changeText(this)"></textarea>\
         <pre class="layui-code">\
         </pre>\
@@ -188,7 +189,6 @@
                 selfm.classlist= new IterClass(level).readXPath(pre);
                 var lists = document.body.selectNodes(selfm.classlist);
             }
-            console.log(selfm.classlist)
             $('#spinfo').html('');
             for(var i =0;i<lists.length;i++){
                 var spval=$("#spvalue").val();
@@ -198,10 +198,9 @@
                 }else{
                     attr = lists[i][att]
                 }
-                $('#spinfo').append("<p style='cursor: hand' onclick='changeStaus(this)' staus='1'>"+i+":"+attr+"</p>");
-                if(i>30){
-                    $('#spinfo').append(lists.length+":……");
-                    return;
+                if(attr)$('#spinfo').append("<p style='cursor: hand' onclick='changeStaus(this)' staus='1'>"+i+":"+attr+"</p>");
+                else{
+                    $('#spinfo').append("<p style='cursor: hand; background:red' onclick='changeStaus(this)' staus='0'>"+i+":"+attr+"</p>");
                 }
             }
         }

@@ -2,43 +2,40 @@
 <block name="body">
     <fieldset class="layui-elem-field">
         <legend>{$task.name}</legend>
-        <div class="layui-btn-group">
-            <a class="layui-btn layui-btn layui-btn-mini" href="/user/putToCvs?id={$task.id}" >下载cvs</a>
-        </div>
-        <div class="layui-field-box">
-            <div class="layui-row">
-                <table class="layui-table" lay-data="{height: '200', url:'/ajax/alevel/id/{$task.id}',page:true}">
-                    <thead>
-                        <tr>
-                            <th lay-data="{field:'id', width:80}">ID</th>
-                            <th lay-data="{field:'taskid', width:80}">taskid</th>
-                            <th lay-data="{field:'attrs', width:80}">属性</th>
-                            <th lay-data="{field:'staus', width:80}">状态</th>
-                            <th lay-data="{field:'level', width:177}">等级</th>
-                            <th lay-data="{field:'scripts', width:177}">脚本</th>
-                        </tr>
-                    </thead>
-                </table>
-            </div>
-            <div class="layui-row">
-                <table class="layui-table" lay-data="{height: '335', url:'/ajax/Aoption/id/{$task.id}'}">
-                    <thead>
-                    <tr>
-                        <th lay-data="{field:'id', width:80}">ID</th>
-                        <th lay-data="{field:'taskid', width:80}">taskid</th>
-                        <th lay-data="{field:'attrs', width:80}">属性</th>
-                        <th lay-data="{field:'staus', width:80}">状态</th>
-                        <th lay-data="{field:'level', width:177}">等级</th>
-                        <th lay-data="{field:'content', width:177}">脚本</th>
-                    </tr>
-                    </thead>
-                </table>
-            </div>
-        </div>
+        <table class="layui-table">
+            <colgroup>
+                <col width="150">
+                <col width="200">
+                <col width="200">
+                <col>
+            </colgroup>
+            <thead>
+            <tr>
+                <th>任务等级</th>
+                <th>完成状态</th>
+                <th>总数据量</th>
+                <th>操作</th>
+            </tr>
+            </thead>
+            <tbody>
+            <volist name="level" id="vo">
+                <tr>
+                    <td>{$vo.level}级</td>
+                    <td><if condition="$vo.staus eq 1">已完成<else/>未完成</if></td>
+                    <td>{$vo.count}条</td>
+                    <td><a class="layui-btn layui-btn layui-btn-mini" href="/user/putToCvs?id={$task.id}&level={$vo.level}" >下载cvs</a></td>
+                </tr>
+            </volist>
+            </tbody>
+        </table>
     </fieldset>
 </block>
 <block name="footscript">
     <script>
-        layui.use('table');
+        layui.use(['element','table'], function(){
+            var element = layui.element;
+
+            //…
+        });
     </script>
 </block>

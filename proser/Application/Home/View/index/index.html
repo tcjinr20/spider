@@ -10,7 +10,7 @@
         <tr>
             <th lay-data="{field:'id', width:80, sort: true}">ID</th>
             <th lay-data="{field:'name', width:160}">数据标签</th>
-            <th lay-data="{field:'name', width:160}">描述</th>
+            <th lay-data="{field:'desc', width:160}">描述</th>
             <th lay-data="{fixed: 'right', width:160, align:'center', toolbar: '#bar'}"></th>
         </tr>
         </thead>
@@ -19,6 +19,9 @@
 <block name="footscript">
     <script type="text/html" id="bar">
         <a class="layui-btn layui-btn-mini" lay-event="detail">查看</a>
+        <if condition="is_login() eq 1">
+            <a class="layui-btn layui-btn-mini" lay-event="edit">编辑</a>
+        </if>
     </script>
     <script>
         layui.use('table', function(){
@@ -33,7 +36,7 @@
                         layer.close(index);
                     });
                 } else if(obj.event === 'edit'){
-                    layer.alert('编辑行：<br>'+ JSON.stringify(data))
+                    location.href='/task/edit?id='+data.id;
                 }
             });
         });

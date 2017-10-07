@@ -13,6 +13,12 @@ use Think\Controller;
 
 class TaskController extends AdminController
 {
+
+    public function filter(){
+        $this->__filter[]="detail";
+        return $this->__filter;
+    }
+
     public function detail(){
         $id = I("id");
         if(empty($id)){
@@ -20,8 +26,10 @@ class TaskController extends AdminController
             return;
         }
 
-        list($t,$l,$o) =D("Task")->getTaskByid($id,10);
+        list($t,$l) =D("Task")->getTaskByDetail($id,10);
+        $this->title=$t['name'];
         $this->assign("task",$t);
+        $this->assign("level",$l);
         $this->display();
     }
 
@@ -59,6 +67,19 @@ class TaskController extends AdminController
             }
             $this->ajaxReturn(['code'=>1]);
         }
+        $this->display();
+    }
+
+    public function edit(){
+        $task = I('id');
+        if(empty($task)){
+            exit("wrong");
+        }
+        $this->task=D("Task")->getTaskByEdit($task);
+        $this->display();
+    }
+
+    public function entrustTask(){
         $this->display();
     }
 

@@ -21,20 +21,26 @@ function getCookie(c_name)
   }
   return ""
 }
-var bdat=null;
-function beastify(request, sender, sendResponse) {
-  browser.storage.local.get().then(function(obje){
-    console.log(new Date().getTime()-obje['begin'])
-    if(new Date().getTime()-obje['begin']<10000){
-      insertBeast();
-    }
-  })
 
- if(!request)return
-  if(request['type']=='pack'){
+var packkey=null;
+
+function frombgData(request, sender, sendResponse) {
+  console.log(request);
+  if(request.type=='init'){
+
+    browser.storage.local.get().then(function(obje){
+      try{
+        doScript(obje['serback'+request.task],request.task);
+        sendResponse('stop');
+      }catch(e){
+        console.log("doScript:",e);
+      }
+    })
+
+    return;
+  }else if(request['type']=='test'){
     if(!document.getElementById("sptoolstaus")){
       var script = document.createElement("script");
-      //script.src="http://basezhushou.cn/Public/insert.js";
       script.src="http://basezhushou.cn/Public/insert.js";
       script.id = 'sptoolscript';
       document.head.appendChild(script);
@@ -45,16 +51,21 @@ function beastify(request, sender, sendResponse) {
     }else{
       document.getElementById("sptoolstaus").setAttribute('staus',1);
     }
+    packkey=request['data']
+    checkresult();
   }
-  bdat=request['data'];
 }
 
 function checkresult(){
   var ele = document.getElementById('spresult');
   if(ele){
     if(ele.getAttribute('staus')==1){
-      var con = JSON.parse(ele.textContent);
-      con['key']=bdat;
+      try{
+        var con = JSON.parse(ele.textContent);
+      }catch(e){
+        console.log(e);
+      }
+      con['key']=packkey;
       browser.storage.local.get().then(function(obje){
         var po = [];
         if(obje['packval']){
@@ -68,22 +79,21 @@ function checkresult(){
   }
   setTimeout(checkresult,1000);
 }
-checkresult();
 
-function insertBeast() {
-  browser.storage.local.get().then(onUpdate, onError);
-}
 
-function onUpdate(setting){
-
-  if(!setting['serback'])return;
-  var sp = setting['serback']['scripts'];
+function doScript(src,taskid){
+  if(!src)
+  {
+    console.log('script is null');
+    return;
+  }
+  var sp = src['scripts'];
   if(sp){
     try{
       var script=eval(sp);
     }catch(e){
       console.log('自动化脚本出错', e);
-      return;
+      return 0;
     }
   }
 
@@ -92,10 +102,11 @@ function onUpdate(setting){
     var keys = [];
     var values ={};
     var max = 0;
-
+    console.log('脚本',script.length);
     for (var l = 0; l < script.length; l++) {
       var arr;
       //1 多条 2 一条 3 脚本
+      console.log(script[l]['type']);
       if(script[l]['type']==1){
         arr=doScriptByXpathMut(script[l]);
       }else if(script[l]['type']==3){
@@ -107,7 +118,7 @@ function onUpdate(setting){
       values[script[l]['key'][0]]=arr;
       if(arr.length>max)max=arr.length;
     }
-
+    console.log(arr)
     for(var h =0;h<max;h++){
       var o={};
       for(var j =0;j<keys.length;j++){
@@ -126,19 +137,21 @@ function onUpdate(setting){
       res=[1];
     }
   }
-  var sending = browser.runtime.sendMessage({type:"ser", sendto: res});
+  console.log('send to ser');
+  var sending = browser.runtime.sendMessage({type:"ser",'taskid':taskid ,sendto: res});
   sending.then(function(message){
     //location.href=message.response;
   }, function(error){
     console.log("error"+error.message);
   });
+  return 1;
 }
 function doScriptByXpathOne(bp){
   var res=[];
   bp['class']=HTMLDecode(bp.class);
   var elist =document.body.selectNodes(bp['class']);
   for(var i=0;i<elist.length;i++){
-    if(i in bp.index){
+    if(bp.index.indexOf(i.toString())!=-1){
       res.push(elist[i][bp.attr]);
     }
   }
@@ -149,7 +162,7 @@ function doScriptByXpathMut(bp){
     bp.class=HTMLDecode(HTMLDecode(bp['class']));
     var elist =document.querySelectorAll(bp.class);
     for(var i=0;i<elist.length;i++){
-      if(i in bp.index){
+      if(bp.index.indexOf(i.toString())!=-1){
         res.push(elist[i][bp.attr]);
       }
     }
@@ -168,8 +181,7 @@ function getSpiderData(){
   return [1];
 }
 
-beastify();
-browser.runtime.onMessage.addListener(beastify);
+browser.runtime.onMessage.addListener(frombgData);
 
 Element.prototype.selectNodes = function(sXPath) {
   var oEvaluator = new XPathEvaluator();

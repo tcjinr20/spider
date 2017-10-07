@@ -1,0 +1,52 @@
+<extend name="base/layout" />
+<block name="body">
+    <fieldset class="layui-elem-field">
+        <legend>任务委托</legend>
+        <div class="layui-field-box">
+            你可以数据采集任务委托给我们。我们将尽快帮你完成数据的采集。
+        </div>
+    </fieldset>
+    <form class="layui-form" >
+        <input hidden name="id" value="{$task.id}">
+        <div class="layui-form-item">
+            <label class="layui-form-label">任务标识</label>
+            <div class="layui-input-block">
+                <input type="text" name="name" lay-verify="required" placeholder="label" autocomplete="off" class="layui-input" value="{$task.name}">
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <label class="layui-form-label">任务网址</label>
+            <div class="layui-input-block">
+                <input type="text"  name="name" lay-verify="required" placeholder="label" autocomplete="off" class="layui-input" value="{$task.name}">
+            </div>
+        </div>
+        <div class="layui-form-item layui-form-text">
+            <label class="layui-form-label">任务描述</label>
+            <div class="layui-input-block">
+                <textarea name="desc" lay-verify="required" placeholder="请输入内容" class="layui-textarea" >{$task.desc}</textarea>
+            </div>
+        </div>
+        <div class="layui-form-item">
+            <div class="layui-input-block">
+                <button class="layui-btn" lay-submit lay-filter="formapply">确定</button>
+            </div>
+        </div>
+    </form>
+</block>
+<block name="footscript">
+    <script>
+        layui.use(['form','jquery','layer'], function(){
+            var form = layui.form;
+            var $=layui.jquery;
+            form.on("submit(formapply)",function(elem){
+                $.post('/ajax/entrustTask',elem.field,function(ber){
+                    if(ber.code=1){
+                        layui.layer.msg("委托成功");
+                    }else{
+                        layui.layer.msg("错误:"+ber.code);
+                    }
+                });
+            })
+        });
+    </script>
+</block>

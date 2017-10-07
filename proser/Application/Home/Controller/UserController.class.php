@@ -52,9 +52,14 @@ class UserController extends AdminController
 //        $this->display();
     }
 
+    public function putToExcel(){
+        vendor("PHPExcel.PHPExcel");
+    }
+
     public function putToCvs(){
         $task = I("id",0);
-        if(empty($task)){
+        $level = I('level');
+        if(empty($task)||empty($level)){
             exit("²ÎÊý´íÎó");
         }
         header('Content-Type: application/vnd.ms-excel');
@@ -62,8 +67,6 @@ class UserController extends AdminController
         header('Cache-Control: max-age=0');
         $key = array();
         $page = 0;
-        $tta=M("TaskLevel")->where("taskid=$task")->select();
-        $level = array_pop($tta)['level'];
         $fp = fopen('php://output', 'w') or die("can't open php://output");
         $puthead = true;
         while($atask = D("Task")->getOutOpt($task,$level,1000,$page)){

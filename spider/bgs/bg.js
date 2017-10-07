@@ -1,88 +1,185 @@
 /**
  * Created by Administrator on 2017/9/15 0015.
  */
-    
-var param = '';
-var curtab;
-var delay = 2000;//刷新频率
-var serpack=[];//发送服务端的数据包
-var inttime = -1;
-//const serhost = 'http://spider.com';
-const serhost = 'http://basezhushou.cn';
 
-function handleMessage(request, sender, sendResponse){
-    if(request.type=='ser'){
-        console.log(param['id'])
-        serpack.push({list:request.sendto,taskid:param['taskid'],optionid:param['id']});
-        sendByPack();
+function Task(id,lay,fter,ser){
+    var self = this;
+    self.taskid = id;
+    self.server = ser;
+    self.delay = lay;
+    self.curtab = null;
+    self.stack = [];
+    self.param=null;
+    self.inttime = -1;
+    self.sendtime = -1;
+    self.packmine=fter?fter:[];
+    self.open = function(){
+        self.server.getFrom('/ajax/ajax_next',{'taskid':self.taskid});
+        return self;
+    }
+    self.update = function(){
+        self.server.getFrom('/ajax/ajax_next',{'taskid':self.taskid});
+    }
+
+    self.backfun = function(backser){
+        var p ={};
+        p['serback'+self.taskid]=backser;
+        self.param = backser;
+
+        browser.storage.local.set(p);
+        self.openTab(backser['url']);
+    }
+
+    self.push =function(send){
+        console.log('push send');
+        self.stack.push({'list':send,taskid:self.param['taskid'],optionid:self.param['id']})
+        self.sendByPack()
+    }
+    self.sendByPack=function(){
+        if(self.inttime!=-1)return;
+        self.inttime = setInterval(function(){
+            if(self.stack.length>0){
+                console.log('send to server')
+                self.server.getFrom("/ajax/ajax_form",self.stack.shift());
+            }else{
+                clearInterval(self.inttime);
+                self.inttime=-1;
+            }
+        },self.delay*1000);
+    }
+
+    self.openTab = function(url,test){
+        if(self.curtab){
+            browser.tabs.update(self.curtab.id,{url:url});
+        }else{
+            browser.tabs.create({url:url}).then(function(tab){
+                self.curtab=tab;
+                br
+            });
+        }
+        if(!test)self.sendToTab({type:"init", task: self.taskid});
+        return self;
+    }
+
+    self.sendToTab=function(obj){
+        if(self.sendtime !=-1)return
+        self.sendtime=setInterval(function(){
+            browser.tabs.sendMessage(self.curtab.id,obj).then(function(m){
+                clearInterval(self.sendtime);
+                self.sendtime=-1;
+                console.log('init back')
+            });
+        },100)
+    }
+
+    self.clearMine=function (){
+        browser.webRequest.onBeforeSendHeaders.addListener(rewriteUserAgentHeader,{urls: ["<all_urls>"]},["blocking", "requestHeaders"]);
+        browser.webRequest.onErrorOccurred.addListener(rewriteError,{urls: ["<all_urls>"]})
+    }
+    function rewriteUserAgentHeader(e){
+        if(self.packmine.indexOf(e.type)!=-1){
+            return {cancel: true};
+        }
+    }
+    function rewriteError(){
+
+    }
+
+    self.error =function(){
+
+    }
+
+    self.delete = function(){
+        console.log('del',self.taskid);
+        browser.webRequest.onBeforeSendHeaders.remove(rewriteUserAgentHeader);
+        browser.webRequest.onErrorOccurred.remove(rewriteError);
+        clearInterval(self.sendtime);
+        clearInterval(self.inttime);
     }
 }
-function sendByPack(){
-    if(inttime!=-1)return;
-    inttime = setInterval(function(){
-        if(serpack.length>0){
-            getFrom("/ajax/ajax_form",serpack.shift(),1);
-        }else{
-            clearInterval(inttime);
-            inttime=-1;
-        }
-    },delay*1000);
-}
 
-browser.runtime.onMessage.addListener(handleMessage);
-function sendToSer(url,param){
-    var fd = buildParam(param);
-    const requestURL = serhost+url+'?XDEBUG_SESSION_START=16742';
-    const requestHeaders = new Headers();
-    const driveRequest = new Request(requestURL, {
-        method: "POST",
-        headers: requestHeaders,
-        body:fd
-    });
-    return fetch(driveRequest).then(function(response){
+function Server(){
+    var self = this;
+    self.serhost = 'http://basezhushou.cn';
+    //self.serhost = 'http://spider.com';
+    self.getFrom=function(url,obj){
+        self.sendToSer(url,obj).then(function(param){
+            if(param.code==1){
+                if(statisTsak[param['taskid']])
+                statisTsak[param['taskid']].backfun(param);
+            }else{
+                console.log(param)
+            }
+        });
+    }
+
+    self.sendToSer=function (url,param){
+        var fd = buildParam(param);
+        const requestURL = self.serhost+url+'?XDEBUG_SESSION_START=13781';
+        const requestHeaders = new Headers();
+        const driveRequest = new Request(requestURL, {
+            method: "POST",
+            headers: requestHeaders,
+            body:fd
+        });
+        return fetch(driveRequest).then(function(response){
             if (response.status === 200) {
-            return response.json();
+                return response.json();
             } else {
-                openTab('content_scripts/empty.html');
+                console.log('error',fd);
                 throw response.status;
             }
-    });
-}
-
-
-function buildParam(param){
-    var fd = new FormData();
-    if(typeof param =='object' || typeof param == 'array'){
-        build(param,'param');
+        });
     }
 
-    function build(pa,name){
-        for(var ss in pa){
-            if(typeof pa[ss] =='object' || typeof pa[ss] == 'array'){
-                build(pa[ss],name+"["+ss+"]");
+    function buildParam(param){
+        var fd = new FormData();
+        if(typeof param =='object' || typeof param == 'array'){
+            build(param,'param');
+        }
+
+        function build(pa,name){
+            for(var ss in pa){
+                if(typeof pa[ss] =='object' || typeof pa[ss] == 'array'){
+                    build(pa[ss],name+"["+ss+"]");
+                }else{
+                    fd.append(name+"["+ss+"]",pa[ss]);
+                }
+            }
+        }
+        return fd;
+    }
+
+    function handleMessage(request, sender, sendResponse){
+        if(request.type=='ser'){
+            if(statisTsak[request.taskid]){
+                statisTsak[request.taskid].push(request.sendto);
+            }
+        }
+    }
+    function handleRemoved(tabId, removeInfo) {
+        for(var s in statisTsak){
+            var t = statisTsak[s];
+            if(removeInfo.isWindowClosing){
+                if(t.curtab.windowId==removeInfo.windowId){
+                    statisTsak[s].delete()
+                    delete statisTsak[s];
+                }
             }else{
-                fd.append(name+"["+ss+"]",pa[ss]);
+                if(t.curtab.id==tabId){
+                    statisTsak[s].delete()
+                    delete statisTsak[s];
+                }
             }
         }
     }
-    return fd;
-}
 
-
-function getFrom(url,obj,cookie){
-    sendToSer(url,obj).then(function(p){
-        param=p;
-        browser.storage.local.set({'serback':param});
-        if(param.code==1 && param['url']){
-            if(cookie){
-                browser.storage.local.set({'begin':new Date().getTime()})
-            }
-            openTab(param['url']);
-        }else{
-            console.log(param)
-        }
-    });
+    browser.runtime.onMessage.addListener(handleMessage);
+    browser.tabs.onRemoved.addListener(handleRemoved);
 }
+var statisTsak ={};
+var server = new Server();
+
 function getHost(url){
     var p = url.indexOf('/',7);
     var host=url.substring(0,p);
@@ -91,81 +188,66 @@ function getHost(url){
     return pro+"www."+arr[arr.length-2]+"."+arr[arr.length-1];
 }
 
-function benginfrompanel(taskid,lay,proxy){
+function benginfrompanel(taskid,lay,proxy,filter){
     delay=lay?lay:2000;
-    ClearMine();
-    console.log(window)
     if(proxy){
         //setProxyIP(proxy);
     }
-    getFrom('/ajax/ajax_next',{'taskid':taskid},1);
+    if(statisTsak[taskid]){
+        statisTsak[taskid].update();
+    }else{
+        statisTsak[taskid]=new Task(taskid,lay,filter,server).open();
+    }
+}
+
+function openTest(url){
+    if(statisTsak['-1']){
+        statisTsak['-1'].openTab(url,1);
+    }else{
+        statisTsak['-1']=new Task('-1').openTab(url,1);
+    }
+}
+
+function openPack(bal){
+    statisTsak['-1'].sendToTab({'type':'test',data:bal});
 }
 
 function getTab(){
     return curtab;
 }
 
-function sendSer(param){
-    sendToSer("/ajax/Spscript",param,0).then(function(p){
+function sendSer(param,back){
+    server.sendToSer("/ajax/Spscript",param,0).then(function(p){
         if(p.code==0){
+            if(back)back.call(null);
             browser.storage.local.clear();
+        }else{
+            console.log(p);
         }
     });
 }
 
-
-function openTab(url){
-    if(curtab){
-        browser.tabs.update(curtab.id,{url:url});
-        //browser.tabs.sendMessage(curtab.id, {type:"run"});
-    }else{
-        browser.tabs.create({url:url}).then(function(tab){
-            curtab=tab;
-            //browser.tabs.sendMessage(curtab.id, {type:"run"});
-        });
-    }
-}
-
 function getSer(){
-    return serhost;
+    return server.serhost;
 }
 
-function getActiveTab() {
-    return browser.tabs.query({active: true, currentWindow: true});
-}
+//function getActiveTab() {
+//    return browser.tabs.query({active: true, currentWindow: true});
+//}
+//
+//getActiveTab().then(function(tabs){
+//    if(tabs[0].url){
+//        browser.cookies.get({
+//            url: tabs[0].url,
+//            name:'begin'
+//        }).then(function(cookie){
+//            if(cookie && cookie.value==1){
+//                getURL({'init':'0'});
+//            }
+//        });
+//    }
+//})
 
-getActiveTab().then(function(tabs){
-    if(tabs[0].url){
-        browser.cookies.get({
-            url: tabs[0].url,
-            name:'begin'
-        }).then(function(cookie){
-            if(cookie && cookie.value==1){
-                getURL({'init':'0'});
-            }
-        });
-    }
-})
-
-function ClearMine(){
-    browser.storage.local.get().then(function(obj){
-        if(obj['packmine'] && obj['packmine'].length>0){
-            var self= this;
-            self.active = true;
-            browser.webRequest.onBeforeSendHeaders.addListener(rewriteUserAgentHeader,{urls: ["<all_urls>"]},["blocking", "requestHeaders"]);
-            browser.webRequest.onErrorOccurred.addListener(rewriteError,{urls: ["<all_urls>"]})
-            function rewriteUserAgentHeader(e){
-                if(!self.active)return;
-                if(obj['packmine'].indexOf(e.type)!=-1){
-                    return {cancel: true};
-                }
-            }
-            function rewriteError(){
-
-            }
-        }
-    })
-}
 
 
 

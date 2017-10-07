@@ -5,7 +5,8 @@ use Think\Controller;
 class IndexController extends BaseController {
 
     public function index(){
-        $this->tasks=D('Task')->getAllTask();
+//        $page=I("page",0);
+//        $this->tasks=D('Task')->getAllTask($page);
         $this->display();
     }
 

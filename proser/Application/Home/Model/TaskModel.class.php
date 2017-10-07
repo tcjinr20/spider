@@ -94,21 +94,29 @@ class TaskModel extends Model
         M('TaskLevel')->addAll($opl);
     }
 
-    public function getAllTask(){
-        $task = $this->field('id,name')->select();
-        foreach($task as &$v){
-            $v['level']=M('TaskLevel')->where('taskid='.$v['id'])->field('level')->select();
-        }
+    public function getAllTask($page){
+        if($page<=0)$page=1;
+        $task = $this->field('id,name,desc')->page($page,30)->select();
         return $task;
     }
 
-    public function getTaskByid($taskid,$optionlimit=20){
-//        $sql = "select a.*,b.scripts,b.attrs,c.url,c.level from sp_task a,sp_task_level b,sp_task_option c WHERE a.id=$taskid and b.taskid=$taskid and c.taskid=$taskid";
-//        $d = $this->query($sql);
+    public function getTaskByEdit($id){
+        $task=$this->field('id,name,desc')->where("id=$id")->select();
+        $level=M("TaskLevel")->field('scripts,attrs,staus,level')->where("taskid=$id")->select();
+        $task[0]['level']=$level;
+        return $task[0];
+    }
+
+    public function getTaskByDetail($taskid){
         $a=$this->find($taskid);
-        $b=M("TaskLevel")->where("taskid=$taskid")->select();
-        $c=M("TaskOption")->where("taskid=$taskid")->limit($optionlimit)->select();
-        return [$a,$b,$c];
+        $b=M("TaskLevel")->field('level,staus')->where("taskid=$taskid")->select();
+        foreach($b as &$k){
+            $w['level']=$k['level'];
+            $w['taskid']=$taskid;
+            $arr=M("TaskOption")->field('count(*)')->where($w)->select();
+            $k['count']=$arr[0]['count(*)'];
+        }
+        return [$a,$b];
     }
 
     public function deltask($taskid){

@@ -24,7 +24,8 @@ class AjaxController extends Controller
     }
 
     public function Aindex(){
-        $all['data']=D("task")->getAllTask();
+        $page=I('page',1);
+        $all['data']=D("task")->getAllTask($page);
         $all['count']=D("task")->count();
         $all['code']=0;
         $all['msg']='';
@@ -94,6 +95,34 @@ class AjaxController extends Controller
     public function ajax_alltask(){
         $d = D("Task")->getAllTask();
         $this->ajaxReturn($d);
+    }
+
+    public function mendTask(){
+        $act=I('act');
+        if($act=='task'){
+            $w['id']=I("id");
+            $d['name']=I('name');
+            $d['desc']=I('desc');
+            if(M("Task")->where($w)->save($d)){
+                $this->ajaxReturn(['code'=>1]);
+            }else{
+                $this->ajaxReturn(['code'=>1006]);
+            }
+        }else if($act=='level'){
+            $w['taskid']=I("tasksid");
+            $w['level']=I("level");
+            $d['scripts'] =I('scripts');
+            $d['attrs'] =I('attrs');
+            if(M("TaskLevel")->where($w)->save($d)){
+                $this->ajaxReturn(['code'=>1]);
+            }else{
+                $this->ajaxReturn(['code'=>1006]);
+            }
+        }
+    }
+
+    public function entrustTask(){
+
     }
 
     public function proxyip(){
