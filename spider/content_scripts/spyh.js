@@ -90,7 +90,7 @@ function doScript(src,taskid){
   var sp = src['scripts'];
   if(sp){
     try{
-      var script=eval(sp);
+      var script=eval(HTMLDecode(sp));
     }catch(e){
       console.log('自动化脚本出错', e);
       return 0;
