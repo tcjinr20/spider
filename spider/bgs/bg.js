@@ -12,12 +12,14 @@ function Task(id,lay,fter,ser){
     self.param=null;
     self.inttime = -1;
     self.sendtime = -1;
-    self.packmine=fter?fter:[];
+    var b = [];
+    for(var i=0;i<fter.length;i++){
+        b.push(fter[i]);
+    }
+    self.packmine=b;
+
     self.open = function(){
         self.server.getFrom('/ajax/ajax_next',{'taskid':self.taskid});
-        if(self.packmine.length>0){
-            self.clearMine();
-        }
         return self;
     }
     self.update = function(){
@@ -28,9 +30,7 @@ function Task(id,lay,fter,ser){
         var p ={};
         p['serback'+self.taskid]=backser;
         self.param = backser;
-
-        browser.storage.local.set(p);
-        self.openTab(backser['url']);
+        self.openTab(backser);
     }
 
     self.push =function(send){
@@ -51,16 +51,15 @@ function Task(id,lay,fter,ser){
         },self.delay*1000);
     }
 
-    self.openTab = function(url,test){
+    self.openTab = function(param,test){
         if(self.curtab){
-            browser.tabs.update(self.curtab.id,{url:url});
+            browser.tabs.update(self.curtab.id,{url:param['url']});
         }else{
-            browser.tabs.create({url:url}).then(function(tab){
+            browser.tabs.create({url:param['url']}).then(function(tab){
                 self.curtab=tab;
-                br
             });
         }
-        if(!test)self.sendToTab({type:"init", task: self.taskid});
+        if(!test)self.sendToTab({type:"init", task: param});
         return self;
     }
 
@@ -75,18 +74,10 @@ function Task(id,lay,fter,ser){
         },100)
     }
 
-    self.clearMine=function (){
-        browser.webRequest.onBeforeSendHeaders.addListener(rewriteUserAgentHeader,{urls: ["<all_urls>"]},["blocking", "requestHeaders"]);
-        browser.webRequest.onErrorOccurred.addListener(rewriteError,{urls: ["<all_urls>"]})
+    self.clearMine=function (type){
+        return self.packmine.indexOf(type)==-1?false:true
     }
-    function rewriteUserAgentHeader(e){
-        if(self.packmine.indexOf(e.type)!=-1){
-            return {cancel: true};
-        }
-    }
-    function rewriteError(){
 
-    }
 
     self.error =function(){
 
@@ -94,8 +85,6 @@ function Task(id,lay,fter,ser){
 
     self.delete = function(){
         console.log('del',self.taskid);
-        browser.webRequest.onBeforeSendHeaders.remove(rewriteUserAgentHeader);
-        browser.webRequest.onErrorOccurred.remove(rewriteError);
         clearInterval(self.sendtime);
         clearInterval(self.inttime);
     }
@@ -176,9 +165,22 @@ function Server(){
             }
         }
     }
+    function rewriteUserAgentHeader(e){
+        for(var s in statisTsak){
+            if(statisTsak[s].curtab.id==e.tabId){
+                if(statisTsak[s].clearMine(e.type)){
+                    return {cancel: true};
+                }
+            }
+        }
+    }
+    function rewriteError(){
 
+    }
     browser.runtime.onMessage.addListener(handleMessage);
     browser.tabs.onRemoved.addListener(handleRemoved);
+    browser.webRequest.onBeforeSendHeaders.addListener(rewriteUserAgentHeader,{urls: ["<all_urls>"]},["blocking", "requestHeaders"]);
+    browser.webRequest.onErrorOccurred.addListener(rewriteError,{urls: ["<all_urls>"]})
 }
 var statisTsak ={};
 var server = new Server();

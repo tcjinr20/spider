@@ -117,8 +117,12 @@ layui.use(['form','jquery','layer'],function(){
     var tid = $('#list').val();
     var deplay =parseInt($('#opt').val());
     var proxy = $('#proxy').val();
-    var fte=[];
-    bg.benginfrompanel(tid,deplay,proxy,fte);
+    var check = [];
+    $("input[lay-filter=mine]:checked").each(function(i,e){
+      check.push(e.value)
+    })
+    bg.benginfrompanel(tid,deplay,proxy,check);
+
   }
 
   function changeSelect(tar){

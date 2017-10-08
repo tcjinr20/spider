@@ -28,14 +28,14 @@ function frombgData(request, sender, sendResponse) {
   console.log(request);
   if(request.type=='init'){
 
-    browser.storage.local.get().then(function(obje){
+
       try{
-        doScript(obje['serback'+request.task],request.task);
+        doScript(request.task);
         sendResponse('stop');
       }catch(e){
         console.log("doScript:",e);
       }
-    })
+
 
     return;
   }else if(request['type']=='test'){
@@ -81,13 +81,13 @@ function checkresult(){
 }
 
 
-function doScript(src,taskid){
-  if(!src)
+function doScript(task){
+  if(!task)
   {
     console.log('script is null');
     return;
   }
-  var sp = src['scripts'];
+  var sp = task['scripts'];
   if(sp){
     try{
       var script=eval(HTMLDecode(sp));
@@ -102,11 +102,9 @@ function doScript(src,taskid){
     var keys = [];
     var values ={};
     var max = 0;
-    console.log('脚本',script.length);
     for (var l = 0; l < script.length; l++) {
       var arr;
       //1 多条 2 一条 3 脚本
-      console.log(script[l]['type']);
       if(script[l]['type']==1){
         arr=doScriptByXpathMut(script[l]);
       }else if(script[l]['type']==3){
@@ -118,7 +116,7 @@ function doScript(src,taskid){
       values[script[l]['key'][0]]=arr;
       if(arr.length>max)max=arr.length;
     }
-    console.log(arr)
+
     for(var h =0;h<max;h++){
       var o={};
       for(var j =0;j<keys.length;j++){
@@ -138,7 +136,7 @@ function doScript(src,taskid){
     }
   }
   console.log('send to ser');
-  var sending = browser.runtime.sendMessage({type:"ser",'taskid':taskid ,sendto: res});
+  var sending = browser.runtime.sendMessage({type:"ser",'taskid':task['taskid'] ,sendto: res});
   sending.then(function(message){
     //location.href=message.response;
   }, function(error){
