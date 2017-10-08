@@ -15,6 +15,9 @@ function Task(id,lay,fter,ser){
     self.packmine=fter?fter:[];
     self.open = function(){
         self.server.getFrom('/ajax/ajax_next',{'taskid':self.taskid});
+        if(self.packmine.length>0){
+            self.clearMine();
+        }
         return self;
     }
     self.update = function(){
