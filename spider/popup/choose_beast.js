@@ -3,7 +3,6 @@ layui.use(['form','jquery','layer'],function(){
   var bg = browser.extension.getBackgroundPage();
   var itemnum = 0;
   var alldata=null;
-
   $(".getproxy").click(function(){
     var url = bg.getSer()+"/ajax/proxyip";
     $.post(url,{},function(ba){
@@ -50,18 +49,28 @@ layui.use(['form','jquery','layer'],function(){
   })
 
   $(".save").on('click',function(){
-    browser.storage.local.get().then(function(obj){
-      if(obj['packval']){
-        var val =obj['packval'];
-        var p = {};
-        p['level'] = $('#levelopt').val();
-        p['script']=val;
-        p['taskid']=$("#list").val();
-        bg.sendSer(p,function(){
-          $("tbody").html('');
-          layui.form.render();
-        });
-      }
+    var opt = "任务:"+$("#list").find("option:selected").text()+"<br/>";
+    opt+="等级："+$("#levelopt").find("option:selected").text();
+    layui.layer.confirm(opt, {
+      btn: ['确定', '取消'] //可以无限个按钮
+    }, function(index){
+      layui.layer.close(index);
+      browser.storage.local.get().then(function(obj){
+        if(obj['packval']){
+          var val =obj['packval'];
+          var p = {};
+          p['level'] = $('#levelopt').val();
+          p['script']=val;
+          p['taskid']=$("#list").val();
+          bg.sendSer(p,function(){
+            $("tbody").html('');
+            layui.form.render();
+          });
+        }
+
+      });
+    }, function(index){
+      layui.layer.close(index);
     });
   })
 
@@ -78,7 +87,7 @@ layui.use(['form','jquery','layer'],function(){
         layui.layer.msg('缺少key');
         return
       }
-      bg.openPack([key]);
+      bg.openPack(key);
     }else if(cls.contains('del')){
       var trs = e.target.id.split("_");
       var kkey = $(".k_"+trs[1]).val();
@@ -141,10 +150,23 @@ layui.use(['form','jquery','layer'],function(){
     $('#levelopt').append("<option value='"+(j+1)+"' >新增"+(j+1)+"</option>");
     layui.form.render()
   }
+  var loginidnex=0;
+  function login(){
+    loginidnex =layer.open({
+      type: 2,
+      title:"登录",
+      area: ['350px', '250px'],
+      fixed: true,
+      maxmin: false,
+      content: browser.extension.getURL('popup/login.html')
+    });
+  }
 
-  function initdata(){
-    $.getJSON(bg.getSer()+"/ajax/ajax_alltask",function(data){
-      if(data && data.length){
+  function initSpy(sce){
+    bg.setSecret(sce)
+    bg.getTask(function(ber){
+      if(ber.code==1){
+        var data= ber.data;
         alldata=data;
         for(var i =0;i<data.length;i++){
           if(data[i].level){
@@ -156,9 +178,9 @@ layui.use(['form','jquery','layer'],function(){
           }
           $('#list').append("<option value='"+data[i].id+"'>"+data[i].name+"</option>");
         }
+        $('#levelopt').append("<option value='"+(j+1)+"' >新增"+(j+1)+"</option>");
         layui.form.on('select(task)',changeSelect);
         browser.storage.local.get().then(function(obj){
-          console.log(obj);
           $('#urlopt').val(obj['testurl']);
           if(obj['packval']){
             var arr =obj['packval'];
@@ -169,26 +191,34 @@ layui.use(['form','jquery','layer'],function(){
           $('#proxy').val(obj['packproxy']);
           if(obj['packkey']){
             var pp = obj['packkey'];
-            $('#list').val(pp[0]);
-            $("#levelopt").val(pp[1]);
-            $('#opt').val(pp[2]);
+            $('#list').val(parseInt(pp[0]));
+            $("#levelopt").val(parseInt(pp[1]));
+            $('#opt').val(parseInt(pp[2]));
           }
 
           if(obj['packmine']){
             var arl = obj['packmine'];
             for(var i =0;i<arl.length;i++){
               if(arl[i])
-              $('input.'+arl[i])[0].checked=true;
+                $('input.'+arl[i])[0].checked=true;
             }
           }
           layui.form.render();
         });
+      }else{
+        login();
       }
     });
   }
+  window.initSpy= initSpy;
+  browser.cookies.get({'url':bg.getSer(),name:'user'}).then(function(val){
 
-  initdata();
-
+    if(val){
+      initSpy(val.value);
+    }else{
+      login();
+    }
+  });
 });
 
 

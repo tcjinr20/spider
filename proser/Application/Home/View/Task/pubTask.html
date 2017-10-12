@@ -56,7 +56,7 @@
         layui.use(['form','layer'], function(){
             var form = layui.form;
             form.on('submit(formapply)', function(data){
-                $.post('/task/pubTask',$(data.elem).serialize(),function(back){
+                $.post('/task/ajax_pub?XDEBUG_SESSION_START=19610',$(data.elem).serialize(),function(back){
                     if(back.code==1){
                         layer.msg('添加成功');
                         redirect('/user/center');

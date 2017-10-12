@@ -3,7 +3,7 @@
  */
 (function(win){
     function spTool(){};
-	var ser ="http://basezhushou.cn";
+	var ser ="https://res.layui.com";
     spTool.__update=0;
     spTool.__open=0;
     var self = null;
@@ -11,15 +11,16 @@
         if(spTool.__open==1)return;
         self = this;
         if(window.layui==null){
+            'https://res.layui.com/layui/dist'
             var link = document.head.appendChild(document.createElement('link'));
             link.rel='stylesheet';
-            link.href=ser+"/Public/css/layui.css";
+            link.href=ser+"/layui/dist/css/layui.css";
 
             var script = document.head.appendChild(document.createElement('script'));
-            script.src=ser+"/Public/layui.js";
+            script.src=ser+"/layui/dist/layui.js";
             script.addEventListener("load",function(){
                 layui.config({
-                    dir: ser+'/Public/' //你存放新模块的目录，注意，不是layui的模块目录
+                    dir: ser+'/layui/dist/' //你存放新模块的目录，注意，不是layui的模块目录
                 }).use(['layer','element','form','code'],self.init); //加载入口
             })
         }else{

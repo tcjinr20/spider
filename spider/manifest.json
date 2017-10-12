@@ -32,7 +32,9 @@
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content_scripts/spyh.js"]
+      "js": ["content_scripts/layui.all.js","content_scripts/spyh.js"],
+      "css":["content_scripts/layui.css","content_scripts/layer.css","content_scripts/laydate.css","content_scripts/code.css"],
+      "all_frames": true
     }
   ],
 "content_security_policy": "script-src 'self' https://res.layui.com/; object-src 'self';"

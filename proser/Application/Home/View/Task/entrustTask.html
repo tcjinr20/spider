@@ -39,7 +39,7 @@
             var form = layui.form;
             var $=layui.jquery;
             form.on("submit(formapply)",function(elem){
-                $.post('/ajax/entrustTask',elem.field,function(ber){
+                $.post('/task/ajax_entrust',elem.field,function(ber){
                     if(ber.code=1){
                         layui.layer.msg("委托成功");
                     }else{

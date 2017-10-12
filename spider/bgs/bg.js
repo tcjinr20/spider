@@ -2,40 +2,42 @@
  * Created by Administrator on 2017/9/15 0015.
  */
 
-function Task(id,lay,fter,ser){
+function Task(id,lay,filter,ser){
     var self = this;
     self.taskid = id;
     self.server = ser;
     self.delay = lay;
     self.curtab = null;
     self.stack = [];
-    self.param=null;
     self.inttime = -1;
     self.sendtime = -1;
-    var b = [];
-    for(var i=0;i<fter.length;i++){
-        b.push(fter[i]);
+    self.packmine = [];
+    if(filter){
+        for(var i=0;i<filter.length;i++){
+            self.packmine.push(filter[i]);
+        }
     }
-    self.packmine=b;
 
     self.open = function(){
         self.server.getFrom('/ajax/ajax_next',{'taskid':self.taskid});
         return self;
     }
-    self.update = function(){
+    self.update = function(lay,filter){
+        self.delay = lay;
+        self.packmine = [];
+        for(var i=0;i<filter.length;i++){
+            self.packmine.push(fter[i]);
+        }
         self.server.getFrom('/ajax/ajax_next',{'taskid':self.taskid});
     }
 
     self.backfun = function(backser){
-        var p ={};
-        p['serback'+self.taskid]=backser;
-        self.param = backser;
         self.openTab(backser);
     }
 
-    self.push =function(send){
-        console.log('push send');
-        self.stack.push({'list':send,taskid:self.param['taskid'],optionid:self.param['id']})
+    self.push =function(id,send){
+        console.log('push send '+id);
+        self.stack.push({'list':send,taskid:self.taskid,optionid:id})
         self.sendByPack()
     }
     self.sendByPack=function(){
@@ -66,23 +68,24 @@ function Task(id,lay,fter,ser){
     self.sendToTab=function(obj){
         if(self.sendtime !=-1)return
         self.sendtime=setInterval(function(){
-            browser.tabs.sendMessage(self.curtab.id,obj).then(function(m){
-                clearInterval(self.sendtime);
-                self.sendtime=-1;
-                console.log('init back')
-            });
-        },100)
+            if(self.curtab){
+                browser.tabs.sendMessage(self.curtab.id,obj).then(function(m){
+                    clearInterval(self.sendtime);
+                    self.sendtime=-1;
+                    console.log('init back')
+                },function(e){
+                    console.log(e);
+                });
+            }
+        },1000)
     }
 
     self.clearMine=function (type){
         return self.packmine.indexOf(type)==-1?false:true
     }
-
-
     self.error =function(){
 
     }
-
     self.delete = function(){
         console.log('del',self.taskid);
         clearInterval(self.sendtime);
@@ -94,6 +97,7 @@ function Server(){
     var self = this;
     self.serhost = 'http://basezhushou.cn';
     //self.serhost = 'http://spider.com';
+    self.sceret='';
     self.getFrom=function(url,obj){
         self.sendToSer(url,obj).then(function(param){
             if(param.code==1){
@@ -102,12 +106,14 @@ function Server(){
             }else{
                 console.log(param)
             }
+        },function(e){
+            console.log(e);
         });
     }
 
     self.sendToSer=function (url,param){
         var fd = buildParam(param);
-        const requestURL = self.serhost+url+'?XDEBUG_SESSION_START=13781';
+        const requestURL = self.serhost+url;
         const requestHeaders = new Headers();
         const driveRequest = new Request(requestURL, {
             method: "POST",
@@ -118,37 +124,33 @@ function Server(){
             if (response.status === 200) {
                 return response.json();
             } else {
-                console.log('error',fd);
+                console.log('error',fd.toString());
                 throw response.status;
             }
         });
     }
 
     function buildParam(param){
-        var fd = new FormData();
+        var fda = new FormData();
         if(typeof param =='object' || typeof param == 'array'){
             build(param,'param');
+        }else{
+            fda.append('param',param);
         }
-
         function build(pa,name){
             for(var ss in pa){
                 if(typeof pa[ss] =='object' || typeof pa[ss] == 'array'){
                     build(pa[ss],name+"["+ss+"]");
                 }else{
-                    fd.append(name+"["+ss+"]",pa[ss]);
+                    fda.append(name+"["+ss+"]",pa[ss]);
                 }
             }
         }
-        return fd;
+
+        fda.append('secret',self.sceret);
+        return fda;
     }
 
-    function handleMessage(request, sender, sendResponse){
-        if(request.type=='ser'){
-            if(statisTsak[request.taskid]){
-                statisTsak[request.taskid].push(request.sendto);
-            }
-        }
-    }
     function handleRemoved(tabId, removeInfo) {
         for(var s in statisTsak){
             var t = statisTsak[s];
@@ -167,7 +169,7 @@ function Server(){
     }
     function rewriteUserAgentHeader(e){
         for(var s in statisTsak){
-            if(statisTsak[s].curtab.id==e.tabId){
+            if(statisTsak[s] &&statisTsak[s].curtab&& statisTsak[s].curtab.id==e.tabId){
                 if(statisTsak[s].clearMine(e.type)){
                     return {cancel: true};
                 }
@@ -177,7 +179,16 @@ function Server(){
     function rewriteError(){
 
     }
-    browser.runtime.onMessage.addListener(handleMessage);
+
+    function handleToSer(request, sender, sendResponse){
+        if(request.type=='toser'){
+            var taskid = request['taskid'];
+            if(statisTsak[taskid]){
+                statisTsak[taskid].push(request['id'],request['sendto']);
+            }
+        }
+    }
+    browser.runtime.onMessage.addListener(handleToSer);
     browser.tabs.onRemoved.addListener(handleRemoved);
     browser.webRequest.onBeforeSendHeaders.addListener(rewriteUserAgentHeader,{urls: ["<all_urls>"]},["blocking", "requestHeaders"]);
     browser.webRequest.onErrorOccurred.addListener(rewriteError,{urls: ["<all_urls>"]})
@@ -199,7 +210,7 @@ function benginfrompanel(taskid,lay,proxy,filter){
         //setProxyIP(proxy);
     }
     if(statisTsak[taskid]){
-        statisTsak[taskid].update();
+        statisTsak[taskid].update(lay,filter);
     }else{
         statisTsak[taskid]=new Task(taskid,lay,filter,server).open();
     }
@@ -207,14 +218,17 @@ function benginfrompanel(taskid,lay,proxy,filter){
 
 function openTest(url){
     if(statisTsak['-1']){
-        statisTsak['-1'].openTab(url,1);
+        statisTsak['-1'].openTab({'url':url},1);
     }else{
-        statisTsak['-1']=new Task('-1').openTab(url,1);
+        statisTsak['-1']=new Task('-1',1,[],server).openTab({'url':url},1);
     }
 }
 
-function openPack(bal){
-    statisTsak['-1'].sendToTab({'type':'test',data:bal});
+function openPack(key){
+    if(statisTsak['-1']){
+        browser.tabs.insertCSS(statisTsak['-1'].curtab.id, {file:"/content_scripts/layui.css"});
+        statisTsak['-1'].sendToTab({'type':'test',data:[key]});
+    }
 }
 
 function getTab(){
@@ -222,7 +236,7 @@ function getTab(){
 }
 
 function sendSer(param,back){
-    server.sendToSer("/ajax/Spscript",param,0).then(function(p){
+    server.sendToSer("/ajax/spsave",param).then(function(p){
         if(p.code==0){
             if(back)back.call(null);
             browser.storage.local.clear();
@@ -236,22 +250,37 @@ function getSer(){
     return server.serhost;
 }
 
-//function getActiveTab() {
-//    return browser.tabs.query({active: true, currentWindow: true});
-//}
-//
-//getActiveTab().then(function(tabs){
-//    if(tabs[0].url){
-//        browser.cookies.get({
-//            url: tabs[0].url,
-//            name:'begin'
-//        }).then(function(cookie){
-//            if(cookie && cookie.value==1){
-//                getURL({'init':'0'});
-//            }
-//        });
-//    }
-//})
+function setSecret(val){
+    server.sceret=val
+}
+
+function getTask(back){
+    server.sendToSer('/ajax/ajax_alltask',{}).then(function(ber){
+        try{
+            if(back){
+                back.call(null,ber);
+            }
+        }catch(e){
+            console.log(e)
+        }
+    })
+}
+
+function login(param,back){
+    server.sendToSer('/ajax/login',param).then(function(ber){
+        if(ber.code==1){
+            var exp=new Date().getTime()+24*60*60
+            browser.cookies.set({'url':server.serhost,name:'user',value:ber.secret,'expirationDate':exp});
+        }
+        try{
+            if(back){
+                back.call(null,ber);
+            }
+        }catch(e){
+            console.log(e)
+        }
+    })
+}
 
 
 

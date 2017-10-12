@@ -14,7 +14,19 @@ level++;
         <label class="layui-form-label">#1级关键属性</label><div class="layui-form-mid layui-word-aux"><input type="text" placeholder="属性" name="task[#1][attr]" autocomplete="off" class="layui-input"></div>\
     </div>'
     var lk=  item.replace(/#1/g,level);
-$("#tasklevel").append(lk);
+    $("#tasklevel").append(lk);
+    layui.element.init();
+
+}
+var tlevel = 0;
+function addExitLevel(taskid){
+    tlevel++;
+    var item=$("#itemtpl").html();
+    var lk=  item.replace(/#1/g,tlevel).replace(/#2/g,taskid);
+    $("#tasklevel").append(lk);
+    layui.form.render();
+    layui.element.init();
+    return false;
 }
 
 function onpreview(){

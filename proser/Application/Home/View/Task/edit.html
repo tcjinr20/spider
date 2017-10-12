@@ -2,6 +2,7 @@
 <block name="body">
     <form class="layui-form" >
         <input hidden name="id" value="{$task.id}">
+        <input hidden name="act" value="task">
         <div class="layui-form-item">
             <label class="layui-form-label">任务标识</label>
             <div class="layui-input-block">
@@ -17,6 +18,7 @@
         <div class="layui-form-item">
             <div class="layui-input-block">
                 <button class="layui-btn" lay-submit lay-filter="formapply">修改</button>
+                <a class="layui-btn" onclick="addExitLevel({$task.id})">添加任务等级</a>
             </div>
         </div>
     </form>
@@ -24,7 +26,7 @@
         <div class="layui-form-item">
             <label class="layui-form-label">任务等级</label>
             <div class="layui-input-block">
-                <div class="layui-collapse">
+                <div class="layui-collapse" id="tasklevel">
                     <volist name="task.level" id="vo">
                         <div class="layui-colla-item">
                             <form class="layui-form" >
@@ -34,9 +36,39 @@
                                         <label class="layui-form-label">{$key+1}级js脚本</label>
                                         <input type="hidden" value="{$key+1}" name="level">
                                         <input type="hidden" value="{$task.id}" name="tasksid">
-                                        <div class="layui-input-block">
-                                            <textarea name="scripts" placeholder="请输入内容" class="layui-textarea">{$vo.scripts}</textarea>
-                                        </div>
+                                        <input type="hidden" value="update" name="act">
+                                        <foreach name="vo.scripts" item="ko">
+                                            <div class="layui-form-item">
+                                                <label class="layui-form-label">type</label>
+                                                <div class="layui-input-block">
+                                                    <select name="scripts[{$key}][type]" lay-verify="required" value="{$ko->type}">
+                                                        <option value="1"  <?php if($ko->type==1) echo 'selected';?>>xpath</option>
+                                                        <option value="2" <?php if($ko->type==2) echo 'selected';?>>脚本</option>
+                                                        <option value="3" <?php if($ko->type==3) echo 'selected';?>>自定义函数</option>
+                                                    </select>
+                                                </div>
+                                            </div>
+                                            <div class="layui-form-item">
+                                                <label class="layui-form-label">class</label>
+                                                <div class="layui-input-block">
+                                                    <input type="text" name="scripts[{$key}][class]" autocomplete="off" class="layui-input" value="{$ko->class}">
+                                                </div>
+                                            </div>
+                                            <div class="layui-form-item">
+                                                <label class="layui-form-label">index</label>
+                                                <div class="layui-input-block">
+                                                        <textarea name="scripts[{$key}][index]" placeholder="请输入内容" class="layui-textarea">
+                                                            {$ko->index|json_encode}
+                                                        </textarea>
+                                                </div>
+                                            </div>
+                                            <div class="layui-form-item">
+                                                <label class="layui-form-label">attr</label>
+                                                <div class="layui-input-block">
+                                                    <input type="text" name="scripts[{$key}][attr]" autocomplete="off" class="layui-input" value="{$ko->attr}">
+                                                </div>
+                                            </div>
+                                        </foreach>
                                         <label class="layui-form-label">{$key+1}级关键属性</label>
                                         <div class="layui-form-mid layui-word-aux">
                                             <input type="text" placeholder="属性" name="attrs" autocomplete="off" class="layui-input" value="{$vo.attrs}">
@@ -44,7 +76,7 @@
                                     </div>
                                     <div class="layui-form-item">
                                         <div class="layui-input-block">
-                                            <button class="layui-btn" lay-submit lay-filter="formlevel">修改</button>
+                                            <button class="layui-btn" lay-submit lay-filter="formapply">修改</button>
                                         </div>
                                     </div>
                                 </div>
@@ -55,14 +87,68 @@
             </div>
         </div>
     </div>
+    <script type="text/html" id="itemtpl">
+        <div class="layui-colla-item">
+            <form class="layui-form" >
+                <h2 class="layui-colla-title">#1级</h2>
+                <div class="layui-colla-content">
+                    <div class="layui-form-item">
+                        <label class="layui-form-label">#1级js脚本</label>
+                        <input type="hidden" value="#1" name="level">
+                        <input type="hidden" value="#2" name="tasksid">
+                        <input type="hidden" value="update" name="act">
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">type</label>
+                                <div class="layui-input-block">
+                                    <select name="scripts[0][type]" lay-verify="required" >
+                                        <option value="1">xpath</option>
+                                        <option value="2">脚本</option>
+                                        <option value="3">自定义函数</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">class</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="scripts[0][class]" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">index</label>
+                                <div class="layui-input-block">
+                                     <textarea name="scripts[0][index]" placeholder="请输入内容" class="layui-textarea">
+                                     </textarea>
+                                </div>
+                            </div>
+                            <div class="layui-form-item">
+                                <label class="layui-form-label">attr</label>
+                                <div class="layui-input-block">
+                                    <input type="text" name="scripts[0][attr]" autocomplete="off" class="layui-input">
+                                </div>
+                            </div>
+                        <label class="layui-form-label">#1级关键属性</label>
+                        <div class="layui-form-mid layui-word-aux">
+                            <input type="text" placeholder="属性" name="attrs" autocomplete="off" class="layui-input">
+                        </div>
+                    </div>
+                    <div class="layui-form-item">
+                        <div class="layui-input-block">
+                            <button class="layui-btn" lay-submit lay-filter="formapply">修改</button>
+                        </div>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </script>
     <script>
+        var tlevel="{$task.level|count}";
         //注意：折叠面板 依赖 element 模块，否则无法进行功能性操作
         layui.use(['jquery','form','layer'], function(){
             var form = layui.form;
             var $=layui.jquery;
             form.on("submit(formapply)",function(elem){
-                elem.field['act']='task';
-                $.post("/ajax/mendTask",elem.field,function(back){
+//                elem.field['scripts[index]']=JSON.parse(elem.field['scripts[index]'])
+                $.post("/task/ajax_mend",elem.field,function(back){
                     if(back.code==1){
                         layui.layer.msg("完成修改")
                     }else{
@@ -71,17 +157,7 @@
                 });
                 return false;
             })
-            form.on("submit(formlevel)",function(elem){
-                elem.field['act']='level';
-                $.post("/ajax/mendTask",elem.field,function(back){
-                    if(back.code==1){
-                        layui.layer.msg("完成修改")
-                    }else{
-                        layui.layer.msg("错误码："+back.code)
-                    }
-                });
-                return false;
-            })
+            form.render();
         });
     </script>
 </block>

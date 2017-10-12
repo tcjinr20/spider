@@ -16,14 +16,13 @@ class AdminController extends Controller
     public $__filter =['login','logout'];
     public function _initialize(){
         $this->title="互联网web数据处理";
-        if(in_array(ACTION_NAME,$this->filter())){
-
-        }else{
+        if(!$this->filter(ACTION_NAME)){
             if(is_login()){
 
             }else{
                 if(IS_AJAX){
                     $this->ajaxReturn(['code'=>1005]);
+                    exit();
                 }else{
                     $this->redirect("/user/login");
                 }
@@ -31,8 +30,8 @@ class AdminController extends Controller
         }
     }
 
-    public function filter(){
-        return $this->__filter;
+    public function filter($action){
+        return in_array($action,$this->__filter);
     }
 
     public function getUser(){

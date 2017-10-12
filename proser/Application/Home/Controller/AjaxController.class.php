@@ -4,62 +4,74 @@
  * User: Administrator
  * Date: 2017/10/2
  * Time: 10:44
+ * 只提供工具调用接口，web的ajax 在自身的controller内实现
  */
 
 namespace Home\Controller;
-
-
 use Think\Controller;
 
 class AjaxController extends Controller
 {
     public function _initialize(){
-        header('Access-Control-Allow-Origin:*');
-        header('Access-Control-Allow-Methods:POST');
-        header('Access-Control-Allow-Headers:x-requested-with,content-type');
+        if(!$this->filter(ACTION_NAME)){
+            $ser =unserializeurl(I("secret",""));
+            if($ser){
+                $arr=explode('spy',$ser);
+                if(time()-$arr[2]>24*60*60){
+                    $this->ajaxReturn(['code'=>1005]);
+                }else{
+                    if(is_login()){
+
+                    }else{
+                        if($t=M("User")->where('id='.$arr[0].' and username="'.$arr[1].'"')->select()){
+                            $_SESSION['user']=$t[0];
+                        }else{
+                            $this->ajaxReturn(['code'=>1005]);
+                        }
+                    }
+                }
+            }else{
+                //$this->ajaxReturn(['code'=>1005]);
+            }
+        }
+    }
+
+    public function filter($action){
+        return in_array($action,['login']);
+    }
+
+
+    public function getUser(){
+        return $_SESSION['user'];
+    }
+
+    public function getUserID(){
+        return $_SESSION['user']['id'];
     }
 
     public function index(){
+        $e=serializeurl("2spytest1".time());
+        echo $e;
+        echo unserializeurl('g203c2OTQyMGFkZjJjZQ==');
         echo 'empty';
     }
 
-    public function Aindex(){
-        $page=I('page',1);
-        $all['data']=D("task")->getAllTask($page);
-        $all['count']=D("task")->count();
-        $all['code']=0;
-        $all['msg']='';
-        $this->ajaxReturn($all);
-    }
-
-    public function Alevel(){
-        $id = I("id",'','intval');
-        $res = array();
-        if(empty($id)){
-            $res['code'] =1006;
-            $res['msg']='参数错误';
+    public function login(){
+        if($param=I("param")){
+            $w['password']=md5($param["password"]);
+            $w['username']= $param["username"];
+            $user = M("User")->where($w)->select();
+            if($user){
+                $_SESSION['user']=$user[0];
+                $set=serializeurl($user[0]['id']."spy".$user[0]['username'].'spy'.time());
+                $this->ajaxReturn(['code'=>1,'secret'=>$set]);
+            }else{
+                $this->ajaxReturn(['code'=>1003]);
+            }
         }else{
-            $res['code'] =1;
-            $res['msg']='';
-            $res['count']=M("TaskLevel")->where("taskid=$id")->count();
-            $res['data']=M("TaskLevel")->where("taskid=$id")->select();
+            $this->ajaxReturn(['code'=>1004]);
         }
-        $this->ajaxReturn($res);
-    }
 
-    public function Aoption(){
-        $id = I("id",'','intval');
-        $res = array();
-        if(empty($id)){
-            $res['code'] =1006;
-            $res['msg']='参数错误';
-        }else{
-            $res['code'] =1;
-            $res['msg']='';
-            $res['count']=M("TaskOption")->where("taskid=$id")->count();
-            $res['data']=M("TaskOption")->where("taskid=$id")->limit(10)->select();
-        }
-        $this->ajaxReturn($res);
     }
 
     public function ajax_form(){
@@ -87,53 +99,30 @@ class AjaxController extends Controller
         if(empty($task)){
             $this->ajaxReturn(array('code'=>1008));
         }else{
+            $task['scripts']=json_decode(html_entity_decode($task['scripts']));
             $task['code']=1;
             $this->ajaxReturn($task);
         }
     }
 
     public function ajax_alltask(){
-        $d = D("Task")->getAllTask();
-        $this->ajaxReturn($d);
-    }
-
-    public function mendTask(){
-        $act=I('act');
-        if($act=='task'){
-            $w['id']=I("id");
-            $d['name']=I('name');
-            $d['desc']=I('desc');
-            if(M("Task")->where($w)->save($d)){
-                $this->ajaxReturn(['code'=>1]);
-            }else{
-                $this->ajaxReturn(['code'=>1006]);
-            }
-        }else if($act=='level'){
-            $w['taskid']=I("tasksid");
-            $w['level']=I("level");
-            $d['scripts'] =I('scripts');
-            $d['attrs'] =I('attrs');
-            if(M("TaskLevel")->where($w)->save($d)){
-                $this->ajaxReturn(['code'=>1]);
-            }else{
-                $this->ajaxReturn(['code'=>1006]);
-            }
+        $d = D("Task")->getAllByTool($this->getUserID());
+        if($d){
+            $this->ajaxReturn(['code'=>1,data=>$d]);
+        }else{
+            $this->ajaxReturn(['code'=>1009]);
         }
-    }
-
-    public function entrustTask(){
-
     }
 
     public function proxyip(){
         $this->ajaxReturn(M("Ips")->order('rand()')->limit(1)->select());
     }
 
-    public function Spscript(){
+    public function spsave(){
         $param = I('param');
         $level=$param['level'];
         $taskid=$param['taskid'];
-        $P['scripts']=json_encode($param['script']);
+        $P['scripts']=htmlentities(json_encode($param['script']));
         if(M("TaskLevel")->where('taskid='.$taskid.' and level='.$level)->select()){
             $b =M("TaskLevel")->where('taskid='.$taskid.' and level='.$level)->save($P);
         }else{

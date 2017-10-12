@@ -5,8 +5,6 @@ use Think\Controller;
 class IndexController extends BaseController {
 
     public function index(){
-//        $page=I("page",0);
-//        $this->tasks=D('Task')->getAllTask($page);
         $this->display();
     }
 
@@ -26,6 +24,15 @@ class IndexController extends BaseController {
         $this->level=$b;
         $this->option=$c;
         $this->display();
+    }
+
+    public function ajax_index(){
+        $page=I('page',1);
+        $all['data']=D("task")->getAllTask($page);
+        $all['count']=D("task")->count();
+        $all['code']=0;
+        $all['msg']='';
+        $this->ajaxReturn($all);
     }
 
     public function test(){

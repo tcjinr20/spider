@@ -32,8 +32,9 @@ class UserController extends AdminController
                 $w['username']= I("username");
                 $user = M("User")->where($w)->select();
                 if($user){
-                    $_SESSION['user']=$user;
-                    $this->ajaxReturn(['code'=>1]);
+                    $_SESSION['user']=$user[0];
+                    $set=serializeurl($user[0]['id']."spy".$user[0]['username'].'spy'.time());
+                    $this->ajaxReturn(['code'=>1,'secret'=>$set]);
                 }else{
                     $this->ajaxReturn(['code'=>1003]);
                 }

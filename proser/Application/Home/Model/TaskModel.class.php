@@ -80,9 +80,10 @@ class TaskModel extends Model
         return $this;
     }
 
-    public function addTask($user,$name){
+    public function addTask($user,$name,$desc){
         $d['name']=$name;
-        $d['user']=$user;
+        $d['userid']=$user;
+        $d['desc']=$desc;
         return $this->add($d);
     }
 
@@ -100,10 +101,26 @@ class TaskModel extends Model
         return $task;
     }
 
+    public function getAllByTool($user){
+        $task = $this->where('userid='.$user)->field('id,name,desc')->select();
+        foreach($task as &$t){
+            $t['level']=M("TaskLevel")->where('taskid='.$t['id'])->select();
+//            $testurl=M('TaskOption')->field('url')->where('taskid='.$t['id'])->limit(1)->select()[0];
+//            if($testurl){
+//                $t['level']['testurl']=$testurl['url'];
+//            }
+        }
+        return $task;
+    }
+
     public function getTaskByEdit($id){
         $task=$this->field('id,name,desc')->where("id=$id")->select();
         $level=M("TaskLevel")->field('scripts,attrs,staus,level')->where("taskid=$id")->select();
+        foreach($level as &$le){
+            $le['scripts']=json_decode(html_entity_decode($le['scripts']));
+        }
         $task[0]['level']=$level;
+//        json_encode()
         return $task[0];
     }
 
