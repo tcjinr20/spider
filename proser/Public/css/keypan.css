@@ -1,0 +1,32 @@
+.keypan{
+    position: absolute;
+    background: red;
+    width: 100px;
+    height: 100px;
+    border-radius: 50px;
+    overflow: hidden;
+}
+.keypan>*{
+    position: absolute;
+    width: 50px;
+    height: 50px;
+    text-align: center;
+    line-height: 50px;
+}
+.keypan .up{
+    top: 0;
+    left: 25px;
+}
+.keypan .down{
+    top: 50px;
+    left: 25px;
+}
+.keypan .left{
+    top: 25px;
+    left: 0px;
+}
+
+.keypan .right{
+    top: 25px;
+    left: 50px;
+}

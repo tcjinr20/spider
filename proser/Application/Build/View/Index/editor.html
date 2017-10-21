@@ -1,0 +1,393 @@
+<!DOCTYPE html>
+<html lang="en"><head>
+	<meta http-equiv="content-type" content="text/html; charset=UTF-8">
+	<title>three.js / editor</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, user-scalable=no, minimum-scale=1.0, maximum-scale=1.0">
+</head>
+<body ontouchstart="">
+<script type="text/javascript" async="" src="__PUBLIC__/editor_files/ga.js"></script>
+<link href="__PUBLIC__/editor_files/main.css" rel="stylesheet">
+<link id="theme" href="__PUBLIC__/editor_files/light.css" rel="stylesheet">
+
+<script src="__PUBLIC__/editor_files/three_002.js"></script>
+<script src="__PUBLIC__/editor_files/system.js"></script>
+
+<script src="__PUBLIC__/editor_files/EditorControls.js"></script>
+<script src="__PUBLIC__/editor_files/TransformControls.js"></script>
+
+<script src="__PUBLIC__/editor_files/jszip.js"></script>
+<script src="__PUBLIC__/editor_files/inflate.js"></script> <!-- FBX -->
+
+<script src="__PUBLIC__/editor_files/AMFLoader.js"></script>
+<script src="__PUBLIC__/editor_files/AWDLoader.js"></script>
+<script src="__PUBLIC__/editor_files/BabylonLoader.js"></script>
+<script src="__PUBLIC__/editor_files/ColladaLoader2.js"></script>
+<script src="__PUBLIC__/editor_files/FBXLoader.js"></script>
+<script src="__PUBLIC__/editor_files/GLTFLoader.js"></script>
+<script src="__PUBLIC__/editor_files/KMZLoader.js"></script>
+<script src="__PUBLIC__/editor_files/MD2Loader.js"></script>
+<script src="__PUBLIC__/editor_files/OBJLoader.js"></script>
+<script src="__PUBLIC__/editor_files/MTLLoader.js"></script>
+<script src="__PUBLIC__/editor_files/PlayCanvasLoader.js"></script>
+<script src="__PUBLIC__/editor_files/PLYLoader.js"></script>
+<script src="__PUBLIC__/editor_files/STLLoader.js"></script>
+<script src="__PUBLIC__/editor_files/TGALoader.js"></script>
+<script src="__PUBLIC__/editor_files/TDSLoader.js"></script>
+<script src="__PUBLIC__/editor_files/UTF8Loader.js"></script>
+<script src="__PUBLIC__/editor_files/VRMLLoader.js"></script>
+<script src="__PUBLIC__/editor_files/VTKLoader.js"></script>
+<script src="__PUBLIC__/editor_files/lzma.js"></script>
+<script src="__PUBLIC__/editor_files/ctm.js"></script>
+<script src="__PUBLIC__/editor_files/CTMLoader.js"></script>
+<script src="__PUBLIC__/editor_files/OBJExporter.js"></script>
+<script src="__PUBLIC__/editor_files/GLTFExporter.js"></script>
+<script src="__PUBLIC__/editor_files/STLExporter.js"></script>
+
+<script src="__PUBLIC__/editor_files/Projector.js"></script>
+<script src="__PUBLIC__/editor_files/CanvasRenderer.js"></script>
+<script src="__PUBLIC__/editor_files/RaytracingRenderer.js"></script>
+<script src="__PUBLIC__/editor_files/SoftwareRenderer.js"></script>
+<script src="__PUBLIC__/editor_files/SVGRenderer.js"></script>
+
+<link rel="stylesheet" href="__PUBLIC__/editor_files/codemirror.css">
+<link rel="stylesheet" href="__PUBLIC__/editor_files/monokai.css">
+<script src="__PUBLIC__/editor_files/codemirror.js"></script>
+<script src="__PUBLIC__/editor_files/javascript.js"></script>
+<script src="__PUBLIC__/editor_files/glsl.js"></script>
+
+<script src="__PUBLIC__/editor_files/esprima.js"></script>
+<script src="__PUBLIC__/editor_files/jsonlint.js"></script>
+<script src="__PUBLIC__/editor_files/glslprep.js"></script>
+
+<link rel="stylesheet" href="__PUBLIC__/editor_files/dialog.css">
+<link rel="stylesheet" href="__PUBLIC__/editor_files/show-hint.css">
+<link rel="stylesheet" href="__PUBLIC__/editor_files/tern.css">
+<script src="__PUBLIC__/editor_files/dialog.js"></script>
+<script src="__PUBLIC__/editor_files/show-hint.js"></script>
+<script src="__PUBLIC__/editor_files/tern.js"></script>
+<script src="__PUBLIC__/editor_files/acorn.js"></script>
+<script src="__PUBLIC__/editor_files/acorn_loose.js"></script>
+<script src="__PUBLIC__/editor_files/walk.js"></script>
+<script src="__PUBLIC__/editor_files/polyfill.js"></script>
+<script src="__PUBLIC__/editor_files/signal.js"></script>
+<script src="__PUBLIC__/editor_files/tern_002.js"></script>
+<script src="__PUBLIC__/editor_files/def.js"></script>
+<script src="__PUBLIC__/editor_files/comment.js"></script>
+<script src="__PUBLIC__/editor_files/infer.js"></script>
+<script src="__PUBLIC__/editor_files/doc_comment.js"></script>
+<script src="__PUBLIC__/editor_files/threejs.js"></script>
+
+<script src="__PUBLIC__/editor_files/signals.js"></script>
+<script src="__PUBLIC__/editor_files/ui_002.js"></script>
+<script src="__PUBLIC__/editor_files/ui.js"></script>
+
+<script src="__PUBLIC__/editor_files/app.js"></script>
+<script src="__PUBLIC__/editor_files/Player.js"></script>
+<script src="__PUBLIC__/editor_files/Script.js"></script>
+
+<script src="__PUBLIC__/editor_files/WebVR.js"></script>
+
+<script src="__PUBLIC__/editor_files/Storage.js"></script>
+
+<script src="__PUBLIC__/editor_files/Editor.js"></script>
+<script src="__PUBLIC__/editor_files/Config.js"></script>
+<script src="__PUBLIC__/editor_files/History.js"></script>
+<script src="__PUBLIC__/editor_files/Loader.js"></script>
+<script src="__PUBLIC__/editor_files/Menubar_006.js"></script>
+<script src="__PUBLIC__/editor_files/Menubar_008.js"></script>
+<script src="__PUBLIC__/editor_files/Menubar_007.js"></script>
+<script src="__PUBLIC__/editor_files/Menubar_005.js"></script>
+<script src="__PUBLIC__/editor_files/Menubar_002.js"></script>
+<!-- <script src="js/Menubar.View.js"></script> -->
+<script src="__PUBLIC__/editor_files/Menubar.js"></script>
+<script src="__PUBLIC__/editor_files/Menubar_003.js"></script>
+<script src="__PUBLIC__/editor_files/Menubar_004.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_010.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_024.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_004.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_006.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_012.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_011.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_009.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_018.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_013.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_016.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_008.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_019.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_002.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_003.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_021.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_015.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_022.js"></script>
+<script src="__PUBLIC__/editor_files/TeapotBufferGeometry.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_007.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_014.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_020.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_005.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_017.js"></script>
+<script src="__PUBLIC__/editor_files/Sidebar_023.js"></script>
+<script src="__PUBLIC__/editor_files/Toolbar.js"></script>
+<script src="__PUBLIC__/editor_files/Viewport_002.js"></script>
+<script src="__PUBLIC__/editor_files/Viewport.js"></script>
+
+<script src="__PUBLIC__/editor_files/Command.js"></script>
+<script src="__PUBLIC__/editor_files/AddObjectCommand.js"></script>
+<script src="__PUBLIC__/editor_files/RemoveObjectCommand.js"></script>
+<script src="__PUBLIC__/editor_files/MoveObjectCommand.js"></script>
+<script src="__PUBLIC__/editor_files/SetPositionCommand.js"></script>
+<script src="__PUBLIC__/editor_files/SetRotationCommand.js"></script>
+<script src="__PUBLIC__/editor_files/SetScaleCommand.js"></script>
+<script src="__PUBLIC__/editor_files/SetValueCommand.js"></script>
+<script src="__PUBLIC__/editor_files/SetUuidCommand.js"></script>
+<script src="__PUBLIC__/editor_files/SetColorCommand.js"></script>
+<script src="__PUBLIC__/editor_files/SetGeometryCommand.js"></script>
+<script src="__PUBLIC__/editor_files/SetGeometryValueCommand.js"></script>
+<script src="__PUBLIC__/editor_files/MultiCmdsCommand.js"></script>
+<script src="__PUBLIC__/editor_files/AddScriptCommand.js"></script>
+<script src="__PUBLIC__/editor_files/RemoveScriptCommand.js"></script>
+<script src="__PUBLIC__/editor_files/SetScriptValueCommand.js"></script>
+<script src="__PUBLIC__/editor_files/SetMaterialCommand.js"></script>
+<script src="__PUBLIC__/editor_files/SetMaterialValueCommand.js"></script>
+<script src="__PUBLIC__/editor_files/SetMaterialColorCommand.js"></script>
+<script src="__PUBLIC__/editor_files/SetMaterialMapCommand.js"></script>
+<script src="__PUBLIC__/editor_files/SetSceneCommand.js"></script>
+
+<!-- <script type="text/javascript" src="https://www.dropbox.com/static/api/2/dropins.js" id="dropboxjs" data-app-key="qyqgfqd9j8z890t"></script> -->
+
+<script src="__PUBLIC__/editor_files/html2canvas.js"></script>
+<script src="__PUBLIC__/editor_files/three.js"></script>
+
+<script>
+
+	window.URL = window.URL || window.webkitURL;
+	window.BlobBuilder = window.BlobBuilder || window.WebKitBlobBuilder || window.MozBlobBuilder;
+
+	Number.prototype.format = function (){
+		return this.toString().replace(/(\d)(?=(\d{3})+(?!\d))/g, "$1,");
+	};
+
+	//
+
+	var editor = new Editor();
+
+	var viewport = new Viewport( editor );
+	document.body.appendChild( viewport.dom );
+
+	var script = new Script( editor );
+	document.body.appendChild( script.dom );
+
+	var player = new Player( editor );
+	document.body.appendChild( player.dom );
+
+	var toolbar = new Toolbar( editor );
+	document.body.appendChild( toolbar.dom );
+
+	var menubar = new Menubar( editor );
+	document.body.appendChild( menubar.dom );
+
+	var sidebar = new Sidebar( editor );
+	document.body.appendChild( sidebar.dom );
+
+	var modal = new UI.Modal();
+	document.body.appendChild( modal.dom );
+
+	editor.setTheme( editor.config.getKey( 'theme' ) );
+
+	editor.storage.init( function () {
+
+		editor.storage.get( function ( state ) {
+
+			if ( isLoadingFromHash ) return;
+
+			if ( state !== undefined ) {
+
+				editor.fromJSON( state );
+
+			}
+
+			var selected = editor.config.getKey( 'selected' );
+
+			if ( selected !== undefined ) {
+
+				editor.selectByUuid( selected );
+
+			}
+
+		} );
+
+		//
+
+		var timeout;
+
+		function saveState( scene ) {
+
+			if ( editor.config.getKey( 'autosave' ) === false ) {
+
+				return;
+
+			}
+
+			clearTimeout( timeout );
+
+			timeout = setTimeout( function () {
+
+				editor.signals.savingStarted.dispatch();
+
+				timeout = setTimeout( function () {
+
+					editor.storage.set( editor.toJSON() );
+
+					editor.signals.savingFinished.dispatch();
+
+				}, 100 );
+
+			}, 1000 );
+
+		};
+
+		var signals = editor.signals;
+
+		signals.geometryChanged.add( saveState );
+		signals.objectAdded.add( saveState );
+		signals.objectChanged.add( saveState );
+		signals.objectRemoved.add( saveState );
+		signals.materialChanged.add( saveState );
+		signals.sceneBackgroundChanged.add( saveState );
+		signals.sceneFogChanged.add( saveState );
+		signals.sceneGraphChanged.add( saveState );
+		signals.scriptChanged.add( saveState );
+		signals.historyChanged.add( saveState );
+
+		signals.showModal.add( function ( content ) {
+
+			modal.show( content );
+
+		} );
+
+	} );
+
+	//
+
+	document.addEventListener( 'dragover', function ( event ) {
+
+		event.preventDefault();
+		event.dataTransfer.dropEffect = 'copy';
+
+	}, false );
+
+	document.addEventListener( 'drop', function ( event ) {
+
+		event.preventDefault();
+
+		if ( event.dataTransfer.files.length > 0 ) {
+
+			editor.loader.loadFile( event.dataTransfer.files[ 0 ] );
+
+		}
+
+	}, false );
+
+	document.addEventListener( 'keydown', function ( event ) {
+
+		switch ( event.keyCode ) {
+
+			case 8: // backspace
+
+				event.preventDefault(); // prevent browser back
+
+			case 46: // delete
+
+				var object = editor.selected;
+
+				if ( confirm( 'Delete ' + object.name + '?' ) === false ) return;
+
+				var parent = object.parent;
+				if ( parent !== null ) editor.execute( new RemoveObjectCommand( object ) );
+
+				break;
+
+			case 90: // Register Ctrl-Z for Undo, Ctrl-Shift-Z for Redo
+
+				if ( event.ctrlKey && event.shiftKey ) {
+
+					editor.redo();
+
+				} else if ( event.ctrlKey ) {
+
+					editor.undo();
+
+				}
+
+				break;
+
+			case 87: // Register W for translation transform mode
+
+				editor.signals.transformModeChanged.dispatch( 'translate' );
+
+				break;
+
+			case 69: // Register E for rotation transform mode
+
+				editor.signals.transformModeChanged.dispatch( 'rotate' );
+
+				break;
+
+			case 82: // Register R for scaling transform mode
+
+				editor.signals.transformModeChanged.dispatch( 'scale' );
+
+				break;
+
+		}
+
+	}, false );
+
+	function onWindowResize( event ) {
+
+		editor.signals.windowResize.dispatch();
+
+	}
+
+	window.addEventListener( 'resize', onWindowResize, false );
+
+	onWindowResize();
+
+	//
+
+	var isLoadingFromHash = false;
+	var hash = window.location.hash;
+
+	if ( hash.substr( 1, 5 ) === 'file=' ) {
+
+		var file = hash.substr( 6 );
+
+		if ( confirm( 'Any unsaved data will be lost. Are you sure?' ) ) {
+
+			var loader = new THREE.FileLoader();
+			loader.crossOrigin = '';
+			loader.load( file, function ( text ) {
+
+				editor.clear();
+				editor.fromJSON( JSON.parse( text ) );
+
+			} );
+
+			isLoadingFromHash = true;
+
+		}
+
+	}
+
+	/*
+	 window.addEventListener( 'message', function ( event ) {
+
+	 editor.clear();
+	 editor.fromJSON( event.data );
+
+	 }, false );
+	 */
+
+</script>
+</body></html>
