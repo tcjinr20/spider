@@ -11,14 +11,35 @@ layui.use('jquery',function(){
 
     init();
     animate();
+    function createRenderer( type, can) {
+        var rendererTypes = {
+            'WebGLRenderer': THREE.WebGLRenderer,
+            'CanvasRenderer': THREE.CanvasRenderer,
+            'SVGRenderer': THREE.SVGRenderer,
+            'SoftwareRenderer': THREE.SoftwareRenderer,
+            'RaytracingRenderer': THREE.RaytracingRenderer
 
+        };
+        if ( type === 'WebGLRenderer' && System.support.webgl === false ) {
+
+            type = 'CanvasRenderer';
+
+        }
+        var renderer = new rendererTypes[ type ]( {canvas:can, antialias: false} );
+        renderer.gammaInput = false;
+        renderer.gammaOutput = false;
+        if (renderer.shadowMap ) {
+            renderer.shadowMap.enabled = true;
+        }
+        return renderer;
+    }
     function init() {
 
         canvas = document.getElementById( "c" );
         $(".scene").each(function(i,e){
             scenes.push( new EleScene(e) );
         })
-        renderer = new THREE.WebGLRenderer( { canvas: canvas, antialias: true } );
+        renderer=createRenderer('WebGLRenderer',canvas);
         renderer.setClearColor( 0xffffff, 1 );
         renderer.setPixelRatio( window.devicePixelRatio );
     }

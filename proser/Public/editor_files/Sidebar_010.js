@@ -11,12 +11,16 @@ var Sidebar = function ( editor ) {
 
 	var sceneTab = new UI.Text( 'SCENE' ).onClick( onClick );
 	var projectTab = new UI.Text( 'PROJECT' ).onClick( onClick );
-	var settingsTab = new UI.Text( 'SETTINGS' ).onClick( onClick );
-
+	var mintab = new UI.Text( '-' );
+	mintab.setColor('#000').setId("min").onClick( min );
 	var tabs = new UI.Div();
 	tabs.setId( 'tabs' );
-	tabs.add( sceneTab, projectTab, settingsTab );
+	tabs.add( sceneTab, projectTab,mintab );
 	container.add( tabs );
+
+	var maxbtn = new UI.Text( '=').setId('max').onClick( max );
+
+	document.body.appendChild( maxbtn.dom);
 
 	function onClick( event ) {
 
@@ -35,27 +39,21 @@ var Sidebar = function ( editor ) {
 	container.add( scene );
 
 	var project = new UI.Span().add(
-		new Sidebar.Project( editor )
+		new Menubar.Status( editor ),
+		new Sidebar.Project( editor ),
+		new Sidebar.Settings( editor ),
+		new Sidebar.History( editor)
+
 	);
 	container.add( project );
-
-	var settings = new UI.Span().add(
-		new Sidebar.Settings( editor ),
-		new Sidebar.History( editor )
-	);
-	container.add( settings );
-
-	//
 
 	function select( section ) {
 
 		sceneTab.setClass( '' );
 		projectTab.setClass( '' );
-		settingsTab.setClass( '' );
 
 		scene.setDisplay( 'none' );
 		project.setDisplay( 'none' );
-		settings.setDisplay( 'none' );
 
 		switch ( section ) {
 			case 'SCENE':
@@ -66,12 +64,20 @@ var Sidebar = function ( editor ) {
 				projectTab.setClass( 'selected' );
 				project.setDisplay( '' );
 				break;
-			case 'SETTINGS':
-				settingsTab.setClass( 'selected' );
-				settings.setDisplay( '' );
-				break;
 		}
+	}
 
+	function min(){
+		maxbtn.setDisplay('');
+		container.dom.style.right ='-300px';
+		editor.signals.hideSidebar.dispatch();
+	}
+
+	function max(){
+		maxbtn.setDisplay('none');
+		container.setDisplay('');
+		container.dom.style.right ='0px';
+		editor.signals.hideSidebar.dispatch();
 	}
 
 	select( 'SCENE' );

@@ -8,7 +8,7 @@ var Editor = function () {
 	this.DEFAULT_CAMERA.name = 'Camera';
 	this.DEFAULT_CAMERA.position.set( 20, 10, 20 );
 	this.DEFAULT_CAMERA.lookAt( new THREE.Vector3() );
-
+	this.renderer = null;
 	var Signal = signals.Signal;
 
 	this.signals = {
@@ -68,7 +68,8 @@ var Editor = function () {
 
 		showGridChanged: new Signal(),
 		refreshSidebarObject3D: new Signal(),
-		historyChanged: new Signal()
+		historyChanged: new Signal(),
+		hideSidebar:new Signal(),
 
 	};
 
@@ -553,6 +554,30 @@ Editor.prototype = {
 
 		this.history.redo();
 
+	},
+
+	screenShot:function(){
+		var imgdata={};
+		imgdata.name=new Date().getTime()+".png";
+		imgdata.data= dataURLtoBlob(this.toDataURL());
+		return imgdata;
+	},
+	toDataURL:function(){
+		return this.renderer.domElement.toDataURL("image/png")
 	}
 
 };
+function dataURLtoBlob(dataurl) {
+	var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],
+		bstr = atob(arr[1]), n = bstr.length, u8arr = new Uint8Array(n);
+	while(n--){
+		u8arr[n] = bstr.charCodeAt(n);
+	}
+	return new Blob([u8arr], {type:mime});
+}
+
+function readBlobAsDataURL(blob, callback) {
+	var a = new FileReader();
+	a.onload = function(e) {callback(e.target.result);};
+	a.readAsDataURL(blob);
+}

@@ -19,7 +19,7 @@ Menubar.File = function ( editor ) {
 
 	var title = new UI.Panel();
 	title.setClass( 'title' );
-	title.setTextContent( 'File' );
+	title.setTextContent( '文件' );
 	container.add( title );
 
 	var options = new UI.Panel();
@@ -30,7 +30,7 @@ Menubar.File = function ( editor ) {
 
 	var option = new UI.Row();
 	option.setClass( 'option' );
-	option.setTextContent( 'New' );
+	option.setTextContent( '新建' );
 	option.onClick( function () {
 
 		if ( confirm( 'Any unsaved data will be lost. Are you sure?' ) ) {
@@ -64,7 +64,7 @@ Menubar.File = function ( editor ) {
 
 	var option = new UI.Row();
 	option.setClass( 'option' );
-	option.setTextContent( 'Import' );
+	option.setTextContent( '导入' );
 	option.onClick( function () {
 
 		fileInput.click();
@@ -268,7 +268,7 @@ Menubar.File = function ( editor ) {
 
 		var manager = new THREE.LoadingManager( function () {
 
-			save( zip.generate( { type: 'blob' } ), 'download.zip' );
+			save( zip.generate( { type: 'blob' } ), 'download.zip','download' );
 
 		} );
 
@@ -288,12 +288,12 @@ Menubar.File = function ( editor ) {
 			zip.file( 'index.html', content );
 
 		} );
-		loader.load( 'js/libs/app.js', function ( content ) {
+		loader.load( 'editor_files/app.js', function ( content ) {
 
 			zip.file( 'js/app.js', content );
 
 		} );
-		loader.load( '../build/three.min.js', function ( content ) {
+		loader.load( '/threejs/three.min.js', function ( content ) {
 
 			zip.file( 'js/three.min.js', content );
 
@@ -301,7 +301,7 @@ Menubar.File = function ( editor ) {
 
 		if ( vr ) {
 
-			loader.load( '../examples/js/vr/WebVR.js', function ( content ) {
+			loader.load( '/threejs/vr/WebVR.js', function ( content ) {
 
 				zip.file( 'js/WebVR.js', content );
 
@@ -339,19 +339,56 @@ Menubar.File = function ( editor ) {
 	link.style.display = 'none';
 	document.body.appendChild( link ); // Firefox workaround, see #6594
 
-	function save( blob, filename ) {
+	function save( blob, filename,type) {
 
-		link.href = URL.createObjectURL( blob );
-		link.download = filename || 'data.json';
-		link.click();
+		var con=document.getElementById('alert').innerHTML;
+
+
+		type=type?type:'scene';
+		layui.layer.open({
+			type: 1,
+			title:filename,
+			content: con, //这里content是一个DOM，注意：最好该元素要存放在body最外层，否则可能被其它的相对元素所影响
+			btn: ['确定', '取消'],
+			btn1:function(index){
+				var img = editor.screenShot();
+				var obj={};
+				obj.name=document.getElementById('tlabel').value;
+				obj.desc = document.getElementById('desc').value;
+
+				obj.type=type;
+				if(!obj.name){
+					layui.layer.msg('没有标签');
+					return;
+				}
+
+
+
+				new SendBold(editor).send(img,{name:filename,data:blob},obj,function(e){
+					if(e.currentTarget.readyState==4){
+						console.log(e.currentTarget.response)
+					}
+				});
+				layui.layer.close(index);
+			},
+			btn2:function(index){
+				layui.layer.close(index);
+			}
+		});
+
+		document.getElementById('showimg').src=editor.toDataURL();
+
+		//link.href = URL.createObjectURL( blob );
+		//link.download = filename || 'data.json';
+		//link.click();
 
 		// URL.revokeObjectURL( url ); breaks Firefox...
 
 	}
 
 	function saveString( text, filename ) {
-
-		save( new Blob( [ text ], { type: 'text/plain' } ), filename );
+		var tt = filename.split('.')[0];
+		save( new Blob( [ text ], { type: 'text/plain' } ), filename ,tt);
 
 	}
 

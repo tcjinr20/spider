@@ -319,7 +319,7 @@ var Viewport = function ( editor ) {
 		}
 
 		renderer = newRenderer;
-
+		editor.renderer=renderer;
 		renderer.autoClear = false;
 		renderer.autoUpdateScene = false;
 		renderer.setPixelRatio( window.devicePixelRatio );
@@ -521,7 +521,6 @@ var Viewport = function ( editor ) {
 
 		grid.visible = showGrid;
 		render();
-
 	} );
 
 	//

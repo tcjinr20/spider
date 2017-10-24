@@ -9,7 +9,7 @@ Menubar.Edit = function ( editor ) {
 
 	var title = new UI.Panel();
 	title.setClass( 'title' );
-	title.setTextContent( 'Edit' );
+	title.setTextContent( '编辑' );
 	container.add( title );
 
 	var options = new UI.Panel();
@@ -20,7 +20,7 @@ Menubar.Edit = function ( editor ) {
 
 	var undo = new UI.Row();
 	undo.setClass( 'option' );
-	undo.setTextContent( 'Undo (Ctrl+Z)' );
+	undo.setTextContent( '撤销 (Ctrl+Z)' );
 	undo.onClick( function () {
 
 		editor.undo();
@@ -32,7 +32,7 @@ Menubar.Edit = function ( editor ) {
 
 	var redo = new UI.Row();
 	redo.setClass( 'option' );
-	redo.setTextContent( 'Redo (Ctrl+Shift+Z)' );
+	redo.setTextContent( '重做 (Ctrl+Shift+Z)' );
 	redo.onClick( function () {
 
 		editor.redo();
@@ -44,7 +44,7 @@ Menubar.Edit = function ( editor ) {
 
 	var option = new UI.Row();
 	option.setClass( 'option' );
-	option.setTextContent( 'Clear History' );
+	option.setTextContent( '清理历史' );
 	option.onClick( function () {
 
 		if ( confirm( 'The Undo/Redo History will be cleared. Are you sure?' ) ) {
@@ -86,7 +86,7 @@ Menubar.Edit = function ( editor ) {
 
 	var option = new UI.Row();
 	option.setClass( 'option' );
-	option.setTextContent( 'Clone' );
+	option.setTextContent( '复制' );
 	option.onClick( function () {
 
 		var object = editor.selected;
@@ -104,7 +104,7 @@ Menubar.Edit = function ( editor ) {
 
 	var option = new UI.Row();
 	option.setClass( 'option' );
-	option.setTextContent( 'Delete (Del)' );
+	option.setTextContent( '删除 (Del)' );
 	option.onClick( function () {
 
 		var object = editor.selected;
@@ -121,83 +121,83 @@ Menubar.Edit = function ( editor ) {
 
 	// Minify shaders
 
-	var option = new UI.Row();
-	option.setClass( 'option' );
-	option.setTextContent( 'Minify Shaders' );
-	option.onClick( function() {
-
-		var root = editor.selected || editor.scene;
-
-		var errors = [];
-		var nMaterialsChanged = 0;
-
-		var path = [];
-
-		function getPath ( object ) {
-
-			path.length = 0;
-
-			var parent = object.parent;
-			if ( parent !== undefined ) getPath( parent );
-
-			path.push( object.name || object.uuid );
-
-			return path;
-
-		}
-
-		var cmds = [];
-		root.traverse( function ( object ) {
-
-			var material = object.material;
-
-			if ( material instanceof THREE.ShaderMaterial ) {
-
-				try {
-
-					var shader = glslprep.minifyGlsl( [
-							material.vertexShader, material.fragmentShader ] );
-
-					cmds.push( new SetMaterialValueCommand( object, 'vertexShader', shader[ 0 ] ) );
-					cmds.push( new SetMaterialValueCommand( object, 'fragmentShader', shader[ 1 ] ) );
-
-					++nMaterialsChanged;
-
-				} catch ( e ) {
-
-					var path = getPath( object ).join( "/" );
-
-					if ( e instanceof glslprep.SyntaxError )
-
-						errors.push( path + ":" +
-								e.line + ":" + e.column + ": " + e.message );
-
-					else {
-
-						errors.push( path +
-								": Unexpected error (see console for details)." );
-
-						console.error( e.stack || e );
-
-					}
-
-				}
-
-			}
-
-		} );
-
-		if ( nMaterialsChanged > 0 ) {
-
-			editor.execute( new MultiCmdsCommand( cmds ), 'Minify Shaders' );
-
-		}
-
-		window.alert( nMaterialsChanged +
-				" material(s) were changed.\n" + errors.join( "\n" ) );
-
-	} );
-	options.add( option );
+	//var option = new UI.Row();
+	//option.setClass( 'option' );
+	//option.setTextContent( 'Minify Shaders' );
+	//option.onClick( function() {
+    //
+	//	var root = editor.selected || editor.scene;
+    //
+	//	var errors = [];
+	//	var nMaterialsChanged = 0;
+    //
+	//	var path = [];
+    //
+	//	function getPath ( object ) {
+    //
+	//		path.length = 0;
+    //
+	//		var parent = object.parent;
+	//		if ( parent !== undefined ) getPath( parent );
+    //
+	//		path.push( object.name || object.uuid );
+    //
+	//		return path;
+    //
+	//	}
+    //
+	//	var cmds = [];
+	//	root.traverse( function ( object ) {
+    //
+	//		var material = object.material;
+    //
+	//		if ( material instanceof THREE.ShaderMaterial ) {
+    //
+	//			try {
+    //
+	//				var shader = glslprep.minifyGlsl( [
+	//						material.vertexShader, material.fragmentShader ] );
+    //
+	//				cmds.push( new SetMaterialValueCommand( object, 'vertexShader', shader[ 0 ] ) );
+	//				cmds.push( new SetMaterialValueCommand( object, 'fragmentShader', shader[ 1 ] ) );
+    //
+	//				++nMaterialsChanged;
+    //
+	//			} catch ( e ) {
+    //
+	//				var path = getPath( object ).join( "/" );
+    //
+	//				if ( e instanceof glslprep.SyntaxError )
+    //
+	//					errors.push( path + ":" +
+	//							e.line + ":" + e.column + ": " + e.message );
+    //
+	//				else {
+    //
+	//					errors.push( path +
+	//							": Unexpected error (see console for details)." );
+    //
+	//					console.error( e.stack || e );
+    //
+	//				}
+    //
+	//			}
+    //
+	//		}
+    //
+	//	} );
+    //
+	//	if ( nMaterialsChanged > 0 ) {
+    //
+	//		editor.execute( new MultiCmdsCommand( cmds ), 'Minify Shaders' );
+    //
+	//	}
+    //
+	//	window.alert( nMaterialsChanged +
+	//			" material(s) were changed.\n" + errors.join( "\n" ) );
+    //
+	//} );
+	//options.add( option );
 
 
 	return container;

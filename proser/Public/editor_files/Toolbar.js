@@ -9,14 +9,17 @@ var Toolbar = function ( editor ) {
 	var container = new UI.Panel();
 	container.setId( 'toolbar' );
 
+
 	var buttons = new UI.Panel();
+	buttons.dom.className='layui-btn-group'
 	container.add( buttons );
+
 
 	// translate / rotate / scale
 
-	var translate = new UI.Button( 'translate' );
+	var translate = new UI.Button( '移动' );
 	translate.dom.title = 'W';
-	translate.dom.className = 'Button selected';
+	translate.dom.className = 'layui-btn layui-btn-normal';
 	translate.onClick( function () {
 
 		signals.transformModeChanged.dispatch( 'translate' );
@@ -24,8 +27,9 @@ var Toolbar = function ( editor ) {
 	} );
 	buttons.add( translate );
 
-	var rotate = new UI.Button( 'rotate' );
+	var rotate = new UI.Button( '旋转' );
 	rotate.dom.title = 'E';
+	rotate.dom.className = 'layui-btn layui-btn-normal';
 	rotate.onClick( function () {
 
 		signals.transformModeChanged.dispatch( 'rotate' );
@@ -33,8 +37,9 @@ var Toolbar = function ( editor ) {
 	} );
 	buttons.add( rotate );
 
-	var scale = new UI.Button( 'scale' );
+	var scale = new UI.Button( '缩放' );
 	scale.dom.title = 'R';
+	scale.dom.className = 'layui-btn layui-btn-normal';
 	scale.onClick( function () {
 
 		signals.transformModeChanged.dispatch( 'scale' );
@@ -57,29 +62,6 @@ var Toolbar = function ( editor ) {
 		}
 
 	} );
-
-	// grid
-
-	var grid = new UI.Number( 25 ).setWidth( '40px' ).onChange( update );
-	buttons.add( new UI.Text( 'grid: ' ) );
-	buttons.add( grid );
-
-	var snap = new UI.THREE.Boolean( false, 'snap' ).onChange( update );
-	buttons.add( snap );
-
-	var local = new UI.THREE.Boolean( false, 'local' ).onChange( update );
-	buttons.add( local );
-
-	var showGrid = new UI.THREE.Boolean( true, 'show' ).onChange( update );
-	buttons.add( showGrid );
-
-	function update() {
-
-		signals.snapChanged.dispatch( snap.getValue() === true ? grid.getValue() : null );
-		signals.spaceChanged.dispatch( local.getValue() === true ? "local" : "world" );
-		signals.showGridChanged.dispatch( showGrid.getValue() );
-
-	}
 
 	return container;
 

@@ -1,3 +1,46 @@
-<include file="./base/head"/>
-<block name="body"></block>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{$title}</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href="__PUBLIC__/css/layui.css" rel="stylesheet">
+    <link href="__PUBLIC__/mstyle.css" rel="stylesheet">
+    <script src="__PUBLIC__/layui.js"></script>
+    <script type="text/javascript" src="__PUBLIC__/mself.js"></script>
+    <block name="head"></block>
+</head>
+<body>
+    <block name="body">
+    </block>
+    <div class="bmenu">
+        <div class="sub add">添加</div>
+        <div class="sub play">play</div>
+        <div class="sub smenu">属性</div>
+        <ul class="subul" target="add">
+            <li class="group">组</li>
+            <p></p>
+            <li class="Plane">平面</li>
+            <li class="Box">方形</li>
+            <li class="Circle">圆</li>
+            <li class="Cylinder">圆柱</li>
+            <li class="Sphere">球体</li>
+            <li class="Icosahedron">多面体</li>
+            <li class="Torus">圆环</li>
+            <li class="TorusKnot">扭结</li>
+            <li class="Teapot">茶壶</li>
+            <li class="Sprite">图形</li>
+            <p></p>
+            <li class="PointLight">点光源</li>
+            <li class="PointLight">聚光灯</li>
+            <li class="DirectionalLight">方向光</li>
+            <li class="HemisphereLight">放射光</li>
+            <li class="AmbientLight">环境光</li>
+        </ul>
+    </div>
+    <div class="seeting">设置</div>
+<block name="footscript"></block>
+</body>
+</html>
+
 

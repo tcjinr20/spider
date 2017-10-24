@@ -1,13 +1,7 @@
-    RewriteEngine on 
-    RewriteCond %{REQUEST_FILENAME} !-d
-    RewriteCond %{REQUEST_FILENAME} !-f 
-    RewriteRule ^(.*)$ index.php?s=$1 [QSA,PT,L]
-
-    <IfModule mod_setenvif.c>
-        <IfModule mod_headers.c>
-            <FilesMatch "\.(cur|gif|ico|jpe?g|png|svgz?|webp|woff)$">
-                SetEnvIf Origin ":" IS_CORS
-                Header set Access-Control-Allow-Origin "*" env=IS_CORS
-            </FilesMatch>
-        </IfModule>
-    </IfModule>
+<IfModule mod_rewrite.c> 
+RewriteEngine on 
+RewriteCond %{REQUEST_FILENAME} !-d 
+RewriteCond %{REQUEST_FILENAME} !-f 
+RewriteBase /index.php
+RewriteRule ^(.*)$ /index.php?/$1 [L]
+</IfModule>

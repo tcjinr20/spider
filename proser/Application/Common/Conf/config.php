@@ -6,6 +6,9 @@ return array(
     'DB_USER' => 'roj5ylg70m',
     'DB_PWD' => 'iW2RvtuIgZ',
     'DB_PORT' => '3306',
-//    'DB_PREFIX' => 'sp_',
     'DB_TYPE' => 'mysqli',
+    'APP_SUB_DOMAIN_DEPLOY'=>1, // ¿ªÆô×ÓÓòÃûÅäÖÃ
+    'APP_SUB_DOMAIN_RULES'=>array(
+        'editor'=>'Build'
+    ),
 );
