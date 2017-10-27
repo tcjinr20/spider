@@ -564,8 +564,12 @@ Editor.prototype = {
 	},
 	toDataURL:function(){
 		return this.renderer.domElement.toDataURL("image/png")
-	}
+	},
 
+	setCamera:function(camera){
+		this.camera = camera;
+
+	}
 };
 function dataURLtoBlob(dataurl) {
 	var arr = dataurl.split(','), mime = arr[0].match(/:(.*?);/)[1],

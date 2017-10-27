@@ -173,8 +173,7 @@
 		var script = new Script( editor );
 		document.body.appendChild( script.dom );
 
-		var player = new Player( editor );
-		document.body.appendChild( player.dom );
+
 
 		var toolbar = new Toolbar( editor );
 		document.body.appendChild( toolbar.dom );
@@ -184,7 +183,8 @@
 
 		var sidebar = new Sidebar( editor );
 		document.body.appendChild( sidebar.dom );
-
+		var player = new Player( editor );
+		document.body.appendChild( player.dom );
 		var modal = new UI.Modal();
 		document.body.appendChild( modal.dom );
 		layui.use(['layer','jquery'],function(){
@@ -244,7 +244,10 @@
 				case 46: // delete
 
 					var object = editor.selected;
-
+					if(object.name=='player-sys'){
+						layui.layer.msg('无法删除');
+						return
+					}
 					if ( confirm( 'Delete ' + object.name + '?' ) === false ) return;
 
 					var parent = object.parent;

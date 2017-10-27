@@ -29,6 +29,8 @@ var Viewport = function ( editor ) {
 
 	//
 
+
+
 	var box = new THREE.Box3();
 
 	var selectionBox = new THREE.BoxHelper();
@@ -42,6 +44,7 @@ var Viewport = function ( editor ) {
 	var objectScaleOnDown = null;
 
 	var transformControls = new THREE.TransformControls( camera, container.dom );
+
 	transformControls.addEventListener( 'change', function () {
 
 		var object = transformControls.object;
