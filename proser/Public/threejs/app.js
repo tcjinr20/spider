@@ -17,9 +17,8 @@ var APP = {
 
 		this.width = 500;
 		this.height = 500;
-		this.isplay =false;
-		this.load = function ( json ) {
 
+		this.load = function ( json ) {
 			renderer = new THREE.WebGLRenderer( { antialias: true } );
 			renderer.setClearColor( 0x000000 );
 			renderer.setPixelRatio( window.devicePixelRatio );
@@ -43,7 +42,7 @@ var APP = {
 			dom.appendChild( renderer.domElement );
 
 			this.setScene( loader.parse( json.scene ) );
-			//this.setCamera( loader.parse( json.camera ) );
+			this.setCamera( loader.parse( json.camera ) );
 
 			events = {
 				init: [],
@@ -109,6 +108,9 @@ var APP = {
 				}
 
 			}
+
+			dispatch( events.init, arguments );
+
 		};
 
 		this.setCamera = function ( value ) {
@@ -162,14 +164,72 @@ var APP = {
 
 		};
 
+		function dispatch( array, event ) {
+
+			for ( var i = 0, l = array.length; i < l; i ++ ) {
+
+				array[ i ]( event );
+
+			}
+
+		}
+
+		var prevTime;
+
+		function animate( time ) {
+
+			try {
+
+				dispatch( events.update, { time: time, delta: time - prevTime } );
+
+			} catch ( e ) {
+
+				console.error( ( e.message || e ), ( e.stack || "" ) );
+
+			}
+
+			renderer.render( scene, camera );
+
+			prevTime = time;
+
+		}
+
 		this.play = function () {
 			this.isplay=true;
 			start( gameLoop, gameViewportSize );
+
+			prevTime = performance.now();
+
+			//document.addEventListener( 'keydown', onDocumentKeyDown );
+			//document.addEventListener( 'keyup', onDocumentKeyUp );
+			//document.addEventListener( 'mousedown', onDocumentMouseDown );
+			//document.addEventListener( 'mouseup', onDocumentMouseUp );
+			//document.addEventListener( 'mousemove', onDocumentMouseMove );
+			//document.addEventListener( 'touchstart', onDocumentTouchStart );
+			//document.addEventListener( 'touchend', onDocumentTouchEnd );
+			//document.addEventListener( 'touchmove', onDocumentTouchMove );
+
+			dispatch( events.start, arguments );
+
+			renderer.animate( animate );
+
 		};
 
 		this.stop = function () {
 			this.isplay=false;
+			//document.removeEventListener( 'keydown', onDocumentKeyDown );
+			//document.removeEventListener( 'keyup', onDocumentKeyUp );
+			//document.removeEventListener( 'mousedown', onDocumentMouseDown );
+			//document.removeEventListener( 'mouseup', onDocumentMouseUp );
+			//document.removeEventListener( 'mousemove', onDocumentMouseMove );
+			//document.removeEventListener( 'touchstart', onDocumentTouchStart );
+			//document.removeEventListener( 'touchend', onDocumentTouchEnd );
+			//document.removeEventListener( 'touchmove', onDocumentTouchMove );
+
+			dispatch( events.stop, arguments );
+
 			renderer.animate( null );
+
 		};
 
 		this.dispose = function () {
@@ -188,7 +248,55 @@ var APP = {
 
 		};
 
-		// player motion parameters
+		//
+
+		function onDocumentKeyDown( event ) {
+
+			dispatch( events.keydown, event );
+
+		}
+
+		function onDocumentKeyUp( event ) {
+
+			dispatch( events.keyup, event );
+
+		}
+
+		function onDocumentMouseDown( event ) {
+
+			dispatch( events.mousedown, event );
+
+		}
+
+		function onDocumentMouseUp( event ) {
+
+			dispatch( events.mouseup, event );
+
+		}
+
+		function onDocumentMouseMove( event ) {
+
+			dispatch( events.mousemove, event );
+
+		}
+
+		function onDocumentTouchStart( event ) {
+
+			dispatch( events.touchstart, event );
+
+		}
+
+		function onDocumentTouchEnd( event ) {
+
+			dispatch( events.touchend, event );
+
+		}
+
+		function onDocumentTouchMove( event ) {
+
+			dispatch( events.touchmove, event );
+
+		}
 
 		var motion = {
 			airborne : false,
@@ -210,34 +318,33 @@ var APP = {
 
 		var keyboardControls = (function() {
 
-			var keys = { SP : 32, W : 87, A : 65, S : 83, D : 68, UP : 38, LT : 37, DN : 40, RT : 39 };
+			var keys = { SP : 32, W : 87, A : 65, S : 83, D : 68, UP : 40, LT : 37, DN : 38, RT : 39 };
 
 			var keysPressed = {};
 
 			(function( watchedKeyCodes ) {
 				var handler = function( down ) {
-					return function( e ) {
-						var index = watchedKeyCodes.indexOf( e.keyCode );
+					return function(keyCode) {
+						var index = watchedKeyCodes.indexOf(parseInt(keyCode));
 						if( index >= 0 ) {
-							keysPressed[watchedKeyCodes[index]] = down; e.preventDefault();
+							keysPressed[watchedKeyCodes[index]] = down;
 						}
 					};
 				};
-				window.addEventListener( "keydown", handler( true ), false );
-				window.addEventListener( "keyup", handler( false ), false );
+				new THREE.MoblieKeyController(handler( true ),handler( false ));
 			})([
 				keys.SP, keys.W, keys.A, keys.S, keys.D, keys.UP, keys.LT, keys.DN, keys.RT
 			]);
 
 			var forward = new THREE.Vector3();
 			var sideways = new THREE.Vector3();
-
+			var len= 0.03;
 			return function() {
 				if( !motion.airborne ) {
 
 					// look around
-					var sx = keysPressed[keys.UP] ? 0.03 : ( keysPressed[keys.DN] ? -0.03 : 0 );
-					var sy = keysPressed[keys.LT] ? 0.03 : ( keysPressed[keys.RT] ? -0.03 : 0 );
+					var sx = keysPressed[keys.UP] ? len : ( keysPressed[keys.DN] ? -len : 0 );
+					var sy = keysPressed[keys.LT] ? len : ( keysPressed[keys.RT] ? -len : 0 );
 
 					if( Math.abs( sx ) >= Math.abs( motion.spinning.x ) ) motion.spinning.x = sx;
 					if( Math.abs( sy ) >= Math.abs( motion.spinning.y ) ) motion.spinning.y = sy;
@@ -305,7 +412,7 @@ var APP = {
 					if( !motion.airborne ) motion.velocity.multiplyScalar( damping );
 					motion.rotation.add( angles );
 					motion.position.add( displacement );
-					motion.rotation.x = Math.max( -0.4, Math.min ( +0.4, motion.rotation.x ) );
+					motion.rotation.x =  motion.rotation.x;
 					motion.rotation.y += tau; motion.rotation.y %= tau;
 					timeLeft -= dt;
 				}
@@ -317,6 +424,7 @@ var APP = {
 			return function() {
 				euler.x = motion.rotation.x;
 				euler.y = motion.rotation.y;
+
 				camera.quaternion.setFromEuler( euler );
 				camera.position.copy( motion.position );
 				camera.position.y += 3.0;
@@ -328,9 +436,7 @@ var APP = {
 			requestAnimationFrame( render );
 		};
 		var lastTimeStamp;
-		var self = this;
 		var render = function( timeStamp ) {
-			if(self.isplay==false)return;
 			var timeElapsed = lastTimeStamp ? timeStamp - lastTimeStamp : 0; lastTimeStamp = timeStamp;
 			gameLoop( timeElapsed );
 			renderer.render( scene, camera );
@@ -338,7 +444,6 @@ var APP = {
 		};
 
 		var gameLoop = function( dt ) {
-
 			resetPlayer();
 			keyboardControls();
 			jumpPads();
@@ -349,6 +454,7 @@ var APP = {
 		var gameViewportSize = function() { return {
 			width: window.innerWidth, height: window.innerHeight
 		}};
+
 	}
 
 };

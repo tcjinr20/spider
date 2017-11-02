@@ -9,7 +9,7 @@ Menubar.Add = function ( editor ) {
 
 	var title = new UI.Panel();
 	title.setClass( 'title' );
-	title.setTextContent( 'Add' );
+	title.setTextContent( '添加模型' );
 	container.add( title );
 
 	var options = new UI.Panel();

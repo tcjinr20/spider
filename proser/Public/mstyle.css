@@ -71,3 +71,7 @@ html,body{
     margin-top: 0.5em;
 }
 
+.layui-progress-text{
+    color: #0055aa;
+}
+

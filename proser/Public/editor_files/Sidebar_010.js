@@ -81,7 +81,5 @@ var Sidebar = function ( editor ) {
 	}
 
 	select( 'SCENE' );
-
-	return container;
-
+	document.body.appendChild(container.dom);
 };

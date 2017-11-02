@@ -51,7 +51,7 @@ select:hover {
 
 #player {
     position: absolute;
-    top: 32px;
+    top: 0px;
     left: 0;
     right: 0px;
     bottom: 32px;
@@ -134,6 +134,7 @@ select:hover {
 }
 
 #sidebar {
+
     position: absolute;
     right: 0;
     top: 50px;
@@ -179,12 +180,14 @@ select:hover {
 }
 
 #toolbar {
+    z-index: 9999;
     position: absolute;
     left: 0;
     right: 0px;
     bottom: 0;
     background: #ffffff;
     color: #333;
+    padding: 4px;
 }
 
 #toolbar * {
@@ -233,6 +236,7 @@ select:hover {
 }
 
 #max{
+    z-index: 999999;
     position: absolute;
     bottom:0px;
     right: 0px;
@@ -245,3 +249,8 @@ select:hover {
     border-radius: 5px;
     border: 1px solid #cccccc;
 }
+
+.layui-icon.layui-btn{
+    margin: 0 10px;
+}
+

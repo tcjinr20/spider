@@ -4,11 +4,14 @@
             <li class="layui-nav-item <?php echo CONTROLLER_NAME=='Index'?'layui-this':''; ?> ">
                 <a href="/">首页</a>
             </li>
-            <li class="layui-nav-item <?php echo CONTROLLER_NAME=='Tool'?'layui-this':''; ?> ">
-                <a href="/index/modelist" >场景</a>
+            <li class="layui-nav-item <?php echo ACTION_NAME=='scenelist'?'layui-this':''; ?> ">
+                <a href="/index/scenelist" >场景</a>
             </li>
             <li class="layui-nav-item <?php echo CONTROLLER_NAME=='Tool'?'layui-this':''; ?> ">
-                <a href="/index/modelist" >贴图</a>
+                <a href="/index/objist" >模型</a>
+            </li>
+            <li class="layui-nav-item <?php echo CONTROLLER_NAME=='Tool'?'layui-this':''; ?> ">
+                <a href="/index/projectlist" >项目</a>
             </li>
             <if condition="is_login() eq 1">
                 <li class="layui-nav-item">

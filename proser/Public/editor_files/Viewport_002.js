@@ -542,7 +542,5 @@ var Viewport = function ( editor ) {
 		}
 
 	}
-
-	return container;
-
+	document.body.appendChild(container.dom);
 };

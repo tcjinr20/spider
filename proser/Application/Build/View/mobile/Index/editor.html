@@ -1,0 +1,33 @@
+<extend name="./base/layout_editor" />
+<block name="body">
+	<div style="display: none" id="pvc">{$sceneid}</div>
+	<script src="__PUBLIC__/threejs/three.js"></script>
+	<script src="__PUBLIC__/threejs/controls/MoblieKeyController.js"></script>
+	<script src="__PUBLIC__/threejs/app.js"></script>
+	<script src="__PUBLIC__/threejs/sendBold.js"></script>
+
+	<script>
+		layui.use(['layer','jquery','element'],function(){
+			window.$=layui.jquery;
+			var html= $('#pvc').html();
+			if(html){
+				formApp(html,init);
+			}else{
+			}
+		});
+
+		function init(json){
+				var player = new APP.Player();
+				player.load(json);
+
+				player.setSize( window.innerWidth, window.innerHeight );
+				player.play();
+
+				document.body.appendChild( player.dom );
+				window.addEventListener( 'resize', function () {
+					player.setSize( window.innerWidth, window.innerHeight );
+				} );
+		}
+	</script>
+
+</block>

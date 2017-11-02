@@ -11,8 +11,6 @@ var Player = function ( editor ) {
 	container.setPosition( 'absolute' );
 	container.setDisplay( 'none' );
 
-	//
-
 	var player = new APP.Player();
 	container.dom.appendChild( player.dom );
 
@@ -43,6 +41,7 @@ var Player = function ( editor ) {
 
 
 	camera.name='player-sys';
+
 	editor.execute( new AddObjectCommand( camera ));
 
 	var geometry = new THREE.PlaneBufferGeometry( 60, 60);
@@ -52,7 +51,5 @@ var Player = function ( editor ) {
 	mesh.rotation.x=-Math.PI*0.5;
 	editor.execute( new AddObjectCommand( mesh ) );
 
-
-	return container;
-
+	document.body.appendChild(container.dom);
 };

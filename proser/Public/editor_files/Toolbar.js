@@ -8,7 +8,7 @@ var Toolbar = function ( editor ) {
 
 	var container = new UI.Panel();
 	container.setId( 'toolbar' );
-
+	document.body.appendChild(container.dom);
 
 	var buttons = new UI.Panel();
 	buttons.dom.className='layui-btn-group'
@@ -62,7 +62,24 @@ var Toolbar = function ( editor ) {
 		}
 
 	} );
+	var isPlaying = false;
+	var playrow = new UI.Button();
+	playrow.dom.innerHTML='&#xe652;'
+	playrow.dom.className='layui-icon layui-btn layui-btn-normal';
+	container.add(playrow);
+	playrow.onClick(function(){
+		if ( isPlaying === false ) {
 
-	return container;
+			isPlaying = true;
+			playrow.dom.innerHTML='&#xe651;'
+			signals.startPlayer.dispatch();
 
+		} else {
+
+			isPlaying = false;
+			playrow.dom.innerHTML='&#xe652;'
+			signals.stopPlayer.dispatch();
+
+		}
+	})
 };
