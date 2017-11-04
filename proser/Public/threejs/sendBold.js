@@ -20,15 +20,6 @@ SendBold.prototype.buildForm = function(img,file,param){
        form.append('file',file.data,file.name);
    }
     return form;
-    //this.xhr.onreadystatechange=function(e){
-    //    if(e.currentTarget.readyState==4){
-    //        if(fun)fun.call(JSON.parse(e.currentTarget.response));
-    //    }else{
-    //        layui.layer.alert('发布失败')
-    //    }
-    //};
-    //this.xhr.open('POST', '/index/upload', true);
-    //this.xhr.send(form);
 }
 SendBold.prototype.sendByObj = function(){
     showWaiting('正在导出数据……');
@@ -173,7 +164,7 @@ SendBold.prototype.txtToBlod=function (name,txt){
 SendBold.prototype.splitToBold=function (name,arr){
     var res =[];
     for(var i=0;i<arr.length;i++){
-        res[i]=this.txtToBlod(name+"_"+arr[i].uuid,arr[i]);
+        res[i]=this.txtToBlod(name+"_"+arr[i].uuid+".blod",arr[i]);
     }
     return res;
 }
@@ -204,7 +195,6 @@ function ShowPan(){
     }
 
     self.showWaiting=function (){
-
         var layindex=layui.layer.open({
             type: 1
             ,title: false //不显示标题栏
@@ -220,7 +210,7 @@ function ShowPan(){
 }
 
 
-var NUMBER_PRECISION = 2;
+var NUMBER_PRECISION = 1;
 function parseNumber( key, value ) {
     return typeof value === 'number' ? parseFloat( value.toFixed( NUMBER_PRECISION ) ) : value;
 }
